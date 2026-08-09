@@ -26,6 +26,10 @@ export default function TabLayout() {
         options={{ title: 'Home', tabBarIcon: tabIcon('home') }}
       />
       <Tabs.Screen
+        name="plan/[weekday]"
+        options={{ href: null, title: 'Planejar dia' }}
+      />
+      <Tabs.Screen
         name="workout"
         options={{ title: 'Treino', tabBarIcon: tabIcon('fitness-center') }}
       />

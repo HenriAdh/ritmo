@@ -1,4 +1,4 @@
-import { integer, real, sqliteTable, text } from 'drizzle-orm/sqlite-core';
+import { integer, real, sqliteTable, text, uniqueIndex } from 'drizzle-orm/sqlite-core';
 
 export const users = sqliteTable('users', {
   id: integer('id').primaryKey({ autoIncrement: true }),
@@ -29,6 +29,19 @@ export const exercises = sqliteTable('exercises', {
   planned_sets: integer('planned_sets').notNull(),
   planned_reps: integer('planned_reps').notNull(),
 });
+
+export const workoutSchedules = sqliteTable('workout_schedules', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  workout_id: integer('workout_id')
+    .notNull()
+    .references(() => workouts.id, { onDelete: 'cascade' }),
+  weekday: integer('weekday').notNull(),
+}, (table) => ({
+  workoutWeekdayUnique: uniqueIndex('workout_schedules_workout_id_weekday_unique').on(
+    table.workout_id,
+    table.weekday,
+  ),
+}));
 
 export const exerciseLogs = sqliteTable('exercise_logs', {
   id: integer('id').primaryKey({ autoIncrement: true }),

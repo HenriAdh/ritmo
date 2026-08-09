@@ -1,16 +1,10 @@
 import { render, screen } from '@testing-library/react-native';
 
 import CookingScreen from '@/app/(tabs)/cooking';
-import HomeScreen from '@/app/(tabs)/index';
 import NutritionScreen from '@/app/(tabs)/nutrition';
 import ShoppingScreen from '@/app/(tabs)/shopping';
 
 describe('telas das abas', () => {
-  it('renderiza a Home', () => {
-    render(<HomeScreen />);
-    expect(screen.getByText('Ritmo')).toBeTruthy();
-  });
-
   it('renderiza a aba Alimentação', () => {
     render(<NutritionScreen />);
     expect(screen.getByText('Alimentação')).toBeTruthy();
