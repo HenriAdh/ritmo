@@ -10,6 +10,9 @@ import type { Exercise, Workout } from '@/src/types';
 jest.mock('expo-router', () => ({
   Link: ({ children, href }: { children: ReactNode; href: unknown }) => <>{children}</>,
   Stack: () => null,
+  useFocusEffect: (effect: () => void) => {
+    effect();
+  },
   useLocalSearchParams: () => ({ id: '1' }),
   useRouter: () => ({
     back: jest.fn(),

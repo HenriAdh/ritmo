@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useFocusEffect } from 'expo-router';
+import { useCallback, useState } from 'react';
 
 import { getWorkoutDetail, type WorkoutDetail } from '@/src/services/workouts';
 
@@ -15,9 +16,11 @@ export function useWorkout(workoutId: number) {
     }
   }, [workoutId]);
 
-  useEffect(() => {
-    refresh();
-  }, [refresh]);
+  useFocusEffect(
+    useCallback(() => {
+      refresh();
+    }, [refresh]),
+  );
 
   return { detail, error, refresh };
 }

@@ -1,5 +1,12 @@
 import { useState } from 'react';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import {
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  ScrollView,
+  Text,
+  View,
+} from 'react-native';
 
 import { Button } from '@/src/components/Button';
 import { TextField } from '@/src/components/TextField';
@@ -90,11 +97,14 @@ export function WorkoutForm({ initial, onSaved }: WorkoutFormProps) {
   };
 
   return (
-    <ScrollView
+    <KeyboardAvoidingView
       className="flex-1 bg-white dark:bg-black"
-      contentContainerClassName="p-4"
-      keyboardShouldPersistTaps="handled">
-      <Text className="mb-2 text-sm font-medium text-neutral-500 dark:text-neutral-400">
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+      <ScrollView
+        className="flex-1"
+        contentContainerClassName="p-4 pb-12"
+        keyboardShouldPersistTaps="handled">
+        <Text className="mb-2 text-sm font-medium text-neutral-500 dark:text-neutral-400">
         Título
       </Text>
       <TextField
@@ -148,6 +158,7 @@ export function WorkoutForm({ initial, onSaved }: WorkoutFormProps) {
       {error ? <Text className="mb-4 text-center text-sm text-red-500">{error}</Text> : null}
 
       <Button label="Salvar" onPress={handleSave} loading={saving} />
-    </ScrollView>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
