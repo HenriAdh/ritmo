@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
-import { render, screen } from '@testing-library/react-native';
+import { Alert } from 'react-native';
+import { fireEvent, render, screen } from '@testing-library/react-native';
 
 import EditWorkoutScreen from '@/app/(tabs)/workout/[id]/edit';
 import WorkoutDetailScreen from '@/app/(tabs)/workout/[id]/index';
@@ -38,6 +39,10 @@ jest.mock('@/src/services/workouts', () => ({
   updateWorkout: jest.fn(),
   deleteWorkout: jest.fn(),
 }));
+
+const mockWorkoutDelete = jest.mocked(
+  jest.requireMock('@/src/services/workouts').deleteWorkout,
+);
 
 jest.mock('@/src/services/workout-execution', () => ({
   listExercisesWithLogs: jest.fn(async () => [
@@ -105,7 +110,7 @@ describe('telas de treino', () => {
     expect(await screen.findByText('Treino A')).toBeTruthy();
     expect(screen.getByText('Supino')).toBeTruthy();
     expect(screen.getByText('Editar')).toBeTruthy();
-    expect(screen.getByText('Excluir')).toBeTruthy();
+    expect(screen.getByText('Excluir treino')).toBeTruthy();
   });
 
   it('renderiza o formulário de edição preenchido', async () => {
@@ -122,5 +127,26 @@ describe('telas de treino', () => {
     expect(screen.getByText('Marcar como feito')).toBeTruthy();
     expect(screen.getByText('+ Adicionar exercício extra')).toBeTruthy();
     expect(screen.getByText('Salvar treino')).toBeTruthy();
+  });
+
+  it('pede confirmação antes de excluir o treino', async () => {
+    const alertSpy = jest.spyOn(Alert, 'alert');
+
+    render(<WorkoutDetailScreen />);
+    await screen.findByText('Treino A');
+
+    fireEvent.press(screen.getByText('Excluir treino'));
+
+    expect(alertSpy).toHaveBeenCalledWith(
+      'Excluir treino',
+      expect.stringContaining('Treino A'),
+      expect.arrayContaining([
+        expect.objectContaining({ text: 'Cancelar', style: 'cancel' }),
+        expect.objectContaining({ text: 'Excluir', style: 'destructive' }),
+      ]),
+    );
+    expect(mockWorkoutDelete).not.toHaveBeenCalled();
+
+    alertSpy.mockRestore();
   });
 });

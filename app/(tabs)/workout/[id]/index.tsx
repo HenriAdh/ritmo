@@ -1,5 +1,5 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { ActivityIndicator, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, Text, View } from 'react-native';
 
 import { Button } from '@/src/components/Button';
 import { useWorkout } from '@/src/hooks/useWorkout';
@@ -11,9 +11,23 @@ export default function WorkoutDetailScreen() {
   const workoutId = Number(id);
   const { detail, error } = useWorkout(workoutId);
 
-  const handleDelete = async () => {
-    await deleteWorkout(workoutId);
-    router.back();
+  const confirmDelete = () => {
+    if (!detail) return;
+    Alert.alert(
+      'Excluir treino',
+      `Tem certeza que quer excluir "${detail.workout.title}"? Essa ação não pode ser desfeita.`,
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Excluir',
+          style: 'destructive',
+          onPress: async () => {
+            await deleteWorkout(workoutId);
+            router.back();
+          },
+        },
+      ],
+    );
   };
 
   return (
@@ -60,9 +74,11 @@ export default function WorkoutDetailScreen() {
             <Button
               label="Editar"
               onPress={() => router.push({ pathname: '/workout/[id]/edit', params: { id } })}
-              className="mb-3"
+              className="mb-4"
             />
-            <Button label="Excluir" onPress={handleDelete} />
+            <View className="border-t border-neutral-100 pt-4 dark:border-neutral-900">
+              <Button label="Excluir treino" variant="danger" onPress={confirmDelete} />
+            </View>
           </View>
         </View>
       )}
