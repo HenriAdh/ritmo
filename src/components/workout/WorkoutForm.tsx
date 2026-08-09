@@ -1,15 +1,9 @@
 import { useState } from 'react';
-import {
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  ScrollView,
-  Text,
-  View,
-} from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 
 import { Button } from '@/src/components/Button';
 import { TextField } from '@/src/components/TextField';
+import { useKeyboardHeight } from '@/src/hooks/useKeyboardHeight';
 import {
   createWorkout,
   updateWorkout,
@@ -45,6 +39,7 @@ export function WorkoutForm({ initial, onSaved }: WorkoutFormProps) {
   );
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const keyboardHeight = useKeyboardHeight();
 
   const addExercise = () => setRows((current) => [...current, EMPTY_EXERCISE]);
 
@@ -97,14 +92,12 @@ export function WorkoutForm({ initial, onSaved }: WorkoutFormProps) {
   };
 
   return (
-    <KeyboardAvoidingView
+    <ScrollView
       className="flex-1 bg-white dark:bg-black"
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-      <ScrollView
-        className="flex-1"
-        contentContainerClassName="p-4 pb-12"
-        keyboardShouldPersistTaps="handled">
-        <Text className="mb-2 text-sm font-medium text-neutral-500 dark:text-neutral-400">
+      contentContainerClassName="p-4"
+      contentContainerStyle={{ paddingBottom: keyboardHeight + 12 }}
+      keyboardShouldPersistTaps="handled">
+      <Text className="mb-2 text-sm font-medium text-neutral-500 dark:text-neutral-400">
         Título
       </Text>
       <TextField
@@ -118,7 +111,9 @@ export function WorkoutForm({ initial, onSaved }: WorkoutFormProps) {
         Exercícios
       </Text>
       {rows.map((row, index) => (
-        <View key={index} className="mb-3 rounded-xl border border-neutral-200 p-3 dark:border-neutral-800">
+        <View
+          key={index}
+          className="mb-3 rounded-xl border border-neutral-200 p-3 dark:border-neutral-800">
           <TextField
             value={row.name}
             onChangeText={(text) => updateRow(index, { name: text })}
@@ -149,7 +144,9 @@ export function WorkoutForm({ initial, onSaved }: WorkoutFormProps) {
         </View>
       ))}
 
-      <Pressable onPress={addExercise} className="mb-6 rounded-xl border border-dashed border-neutral-300 p-3 dark:border-neutral-700">
+      <Pressable
+        onPress={addExercise}
+        className="mb-6 rounded-xl border border-dashed border-neutral-300 p-3 dark:border-neutral-700">
         <Text className="text-center text-sm font-medium text-neutral-500 dark:text-neutral-400">
           + Adicionar exercício
         </Text>
@@ -158,7 +155,6 @@ export function WorkoutForm({ initial, onSaved }: WorkoutFormProps) {
       {error ? <Text className="mb-4 text-center text-sm text-red-500">{error}</Text> : null}
 
       <Button label="Salvar" onPress={handleSave} loading={saving} />
-      </ScrollView>
-    </KeyboardAvoidingView>
+    </ScrollView>
   );
 }
