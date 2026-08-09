@@ -1,9 +1,10 @@
-import { Text, View } from 'react-native';
+import { ModulePlaceholder } from '@/src/components/ModulePlaceholder';
 
 export default function HomeScreen() {
   return (
-    <View className="flex-1 items-center justify-center bg-white dark:bg-black">
-      <Text className="text-2xl font-semibold text-neutral-900 dark:text-neutral-100">Ritmo</Text>
-    </View>
+    <ModulePlaceholder
+      title="Ritmo"
+      description="Seu resumo do dia vai aparecer aqui: treino, refeições, cozinha e compras."
+    />
   );
 }
