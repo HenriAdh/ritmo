@@ -53,6 +53,11 @@ export default function WorkoutDetailScreen() {
           </View>
           <View className="mt-auto border-t border-neutral-200 p-4 dark:border-neutral-800">
             <Button
+              label="Iniciar treino"
+              onPress={() => router.push({ pathname: '/workout/[id]/run', params: { id } })}
+              className="mb-3"
+            />
+            <Button
               label="Editar"
               onPress={() => router.push({ pathname: '/workout/[id]/edit', params: { id } })}
               className="mb-3"

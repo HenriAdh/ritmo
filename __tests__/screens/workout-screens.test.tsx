@@ -3,9 +3,10 @@ import { render, screen } from '@testing-library/react-native';
 
 import EditWorkoutScreen from '@/app/(tabs)/workout/[id]/edit';
 import WorkoutDetailScreen from '@/app/(tabs)/workout/[id]/index';
+import WorkoutRunScreen from '@/app/(tabs)/workout/[id]/run';
 import WorkoutListScreen from '@/app/(tabs)/workout/index';
 import NewWorkoutScreen from '@/app/(tabs)/workout/new';
-import type { Exercise, Workout } from '@/src/types';
+import type { Exercise, ExerciseLog, Workout } from '@/src/types';
 
 jest.mock('expo-router', () => ({
   Link: ({ children, href }: { children: ReactNode; href: unknown }) => <>{children}</>,
@@ -38,6 +39,14 @@ jest.mock('@/src/services/workouts', () => ({
   deleteWorkout: jest.fn(),
 }));
 
+jest.mock('@/src/services/workout-execution', () => ({
+  listExercisesWithLogs: jest.fn(async () => [
+    { exercise: mockExercise, log: mockExerciseLog },
+  ]),
+  upsertExerciseLog: jest.fn(),
+  getWorkoutProgress: jest.fn(async () => ({ total: 1, done: 0 })),
+}));
+
 const mockWorkout: Workout = {
   id: 1,
   user_id: 1,
@@ -51,6 +60,17 @@ const mockExercise: Exercise = {
   name: 'Supino',
   planned_sets: 3,
   planned_reps: 10,
+};
+
+const mockExerciseLog: ExerciseLog = {
+  id: 10,
+  exercise_id: 1,
+  date: '2026-08-09',
+  done: false,
+  weight_used: null,
+  actual_sets: null,
+  actual_reps: null,
+  notes: null,
 };
 
 describe('telas de treino', () => {
@@ -83,5 +103,13 @@ describe('telas de treino', () => {
 
     expect(await screen.findByDisplayValue('Supino')).toBeTruthy();
     expect(screen.getByText('Salvar')).toBeTruthy();
+  });
+
+  it('renderiza a tela de execução com o exercício do dia', async () => {
+    render(<WorkoutRunScreen />);
+
+    expect(await screen.findByText('Supino')).toBeTruthy();
+    expect(screen.getByText('Marcar como feito')).toBeTruthy();
+    expect(screen.getByText('Salvar treino')).toBeTruthy();
   });
 });

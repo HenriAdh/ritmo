@@ -60,6 +60,7 @@ function emptyRun(): RunResult {
 export function resetDb(): void {
   selectQueue = [];
   insertResult.length = 0;
+  jest.clearAllMocks();
 
   mockDb.select.mockImplementation(() => ({
     from: () => makeSelectQuery(() => nextRows()),
