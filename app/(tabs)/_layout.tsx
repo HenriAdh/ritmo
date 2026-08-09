@@ -1,5 +1,6 @@
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Tabs } from 'expo-router';
+import { useColorScheme } from 'nativewind';
 
 type IconName = keyof typeof MaterialIcons.glyphMap;
 
@@ -10,12 +11,15 @@ function tabIcon(name: IconName) {
 }
 
 export default function TabLayout() {
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === 'dark';
+
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: '#171717',
-        tabBarInactiveTintColor: '#a3a3a3',
+        tabBarActiveTintColor: isDark ? '#fafafa' : '#171717',
+        tabBarInactiveTintColor: isDark ? '#525252' : '#a3a3a3',
       }}>
       <Tabs.Screen
         name="index"

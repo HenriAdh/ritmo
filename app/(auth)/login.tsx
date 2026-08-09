@@ -1,7 +1,9 @@
 import { Link } from 'expo-router';
 import { useState } from 'react';
-import { ActivityIndicator, Pressable, Text, TextInput, View } from 'react-native';
+import { Text, View } from 'react-native';
 
+import { Button } from '@/src/components/Button';
+import { TextField } from '@/src/components/TextField';
 import { loginUser } from '@/src/services/auth';
 import { useAuthStore } from '@/src/stores/auth-store';
 
@@ -31,36 +33,25 @@ export default function LoginScreen() {
         Ritmo
       </Text>
 
-      <TextInput
+      <TextField
         value={name}
         onChangeText={setName}
         placeholder="Nome"
         autoCapitalize="none"
         autoCorrect={false}
-        className="mb-3 rounded-xl border border-neutral-300 bg-white px-4 py-3 text-base text-neutral-900 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100"
-        placeholderTextColor="#9ca3af"
+        className="mb-3"
       />
-      <TextInput
+      <TextField
         value={password}
         onChangeText={setPassword}
         placeholder="Senha"
         secureTextEntry
-        className="mb-4 rounded-xl border border-neutral-300 bg-white px-4 py-3 text-base text-neutral-900 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100"
-        placeholderTextColor="#9ca3af"
+        className="mb-4"
       />
 
       {error ? <Text className="mb-3 text-center text-sm text-red-500">{error}</Text> : null}
 
-      <Pressable
-        onPress={handleLogin}
-        disabled={submitting}
-        className="items-center rounded-xl bg-neutral-900 py-3 dark:bg-neutral-100">
-        {submitting ? (
-          <ActivityIndicator color="#fafafa" />
-        ) : (
-          <Text className="text-base font-semibold text-white dark:text-black">Entrar</Text>
-        )}
-      </Pressable>
+      <Button label="Entrar" onPress={handleLogin} loading={submitting} />
 
       <Link
         href="/register"

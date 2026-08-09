@@ -1,10 +1,11 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import { useColorScheme } from 'nativewind';
 import { ActivityIndicator, View } from 'react-native';
 import 'react-native-reanimated';
 
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import '@/src/lib/nativewind-interop';
 import { MigrationGate } from '@/src/db/migrations-gate';
 import { useAuthHydrated } from '@/src/hooks/use-auth-hydrated';
 import { useAuthStore } from '@/src/stores/auth-store';
@@ -16,7 +17,7 @@ export const unstable_settings = {
 };
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
+  const { colorScheme } = useColorScheme();
   const user = useAuthStore((state) => state.user);
   const hydrated = useAuthHydrated();
 

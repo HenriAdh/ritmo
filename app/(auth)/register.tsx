@@ -1,7 +1,9 @@
 import { Link } from 'expo-router';
 import { useState } from 'react';
-import { ActivityIndicator, Pressable, Text, TextInput, View } from 'react-native';
+import { Text, View } from 'react-native';
 
+import { Button } from '@/src/components/Button';
+import { TextField } from '@/src/components/TextField';
 import { registerUser } from '@/src/services/auth';
 import { useAuthStore } from '@/src/stores/auth-store';
 
@@ -36,44 +38,32 @@ export default function RegisterScreen() {
         Ritmo
       </Text>
 
-      <TextInput
+      <TextField
         value={name}
         onChangeText={setName}
         placeholder="Nome"
         autoCapitalize="none"
         autoCorrect={false}
-        className="mb-3 rounded-xl border border-neutral-300 bg-white px-4 py-3 text-base text-neutral-900 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100"
-        placeholderTextColor="#9ca3af"
+        className="mb-3"
       />
-      <TextInput
+      <TextField
         value={password}
         onChangeText={setPassword}
         placeholder="Senha"
         secureTextEntry
-        className="mb-3 rounded-xl border border-neutral-300 bg-white px-4 py-3 text-base text-neutral-900 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100"
-        placeholderTextColor="#9ca3af"
+        className="mb-3"
       />
-      <TextInput
+      <TextField
         value={confirmPassword}
         onChangeText={setConfirmPassword}
         placeholder="Confirmar senha"
         secureTextEntry
-        className="mb-4 rounded-xl border border-neutral-300 bg-white px-4 py-3 text-base text-neutral-900 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100"
-        placeholderTextColor="#9ca3af"
+        className="mb-4"
       />
 
       {error ? <Text className="mb-3 text-center text-sm text-red-500">{error}</Text> : null}
 
-      <Pressable
-        onPress={handleRegister}
-        disabled={submitting}
-        className="items-center rounded-xl bg-neutral-900 py-3 dark:bg-neutral-100">
-        {submitting ? (
-          <ActivityIndicator color="#fafafa" />
-        ) : (
-          <Text className="text-base font-semibold text-white dark:text-black">Criar conta</Text>
-        )}
-      </Pressable>
+      <Button label="Criar conta" onPress={handleRegister} loading={submitting} />
 
       <Link href="/login" className="mt-4 text-center text-sm text-neutral-600 dark:text-neutral-300">
         Já tenho conta
