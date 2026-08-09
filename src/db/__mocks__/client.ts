@@ -17,6 +17,7 @@ interface RunResult {
 }
 
 const insertResult: unknown[] = [];
+const insertValues: Record<string, unknown>[] = [];
 let selectQueue: unknown[][];
 
 export const mockDb = {
@@ -60,17 +61,21 @@ function emptyRun(): RunResult {
 export function resetDb(): void {
   selectQueue = [];
   insertResult.length = 0;
+  insertValues.length = 0;
   jest.clearAllMocks();
 
   mockDb.select.mockImplementation(() => ({
     from: () => makeSelectQuery(() => nextRows()),
   }));
 
-  mockDb.insert.mockImplementation(() => ({
-    values: () => ({
-      returning: () => makeReturning(insertResult),
-      run: () => emptyRun(),
-    }),
+  mockDb.insert.mockImplementation((table: unknown) => ({
+    values: (values: Record<string, unknown>) => {
+      insertValues.push(values);
+      return {
+        returning: () => makeReturning(insertResult),
+        run: () => emptyRun(),
+      };
+    },
   }));
 
   mockDb.update.mockImplementation(() => ({
@@ -103,6 +108,10 @@ export function setSelectResults(...rowSets: unknown[][]): void {
 export function setInsertResult(...rows: unknown[]): void {
   insertResult.length = 0;
   insertResult.push(...rows);
+}
+
+export function getInsertValues(): Record<string, unknown>[] {
+  return insertValues;
 }
 
 export const db = mockDb;

@@ -32,14 +32,14 @@ export const exercises = sqliteTable('exercises', {
 
 export const exerciseLogs = sqliteTable('exercise_logs', {
   id: integer('id').primaryKey({ autoIncrement: true }),
-  exercise_id: integer('exercise_id')
-    .notNull()
-    .references(() => exercises.id, { onDelete: 'cascade' }),
+  workout_id: integer('workout_id').references(() => workouts.id, { onDelete: 'cascade' }),
+  exercise_id: integer('exercise_id').references(() => exercises.id, { onDelete: 'cascade' }),
+  exercise_name: text('exercise_name'),
   date: text('date').notNull(),
   done: integer('done', { mode: 'boolean' }).notNull().default(false),
   weight_used: real('weight_used'),
   actual_sets: integer('actual_sets'),
-  actual_reps: integer('actual_reps'),
+  actual_reps: text('actual_reps'),
   notes: text('notes'),
 });
 

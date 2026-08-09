@@ -41,7 +41,15 @@ jest.mock('@/src/services/workouts', () => ({
 
 jest.mock('@/src/services/workout-execution', () => ({
   listExercisesWithLogs: jest.fn(async () => [
-    { exercise: mockExercise, log: mockExerciseLog },
+    {
+      key: 'p-1',
+      isExtra: false,
+      exerciseId: 1,
+      name: 'Supino',
+      plannedSets: 3,
+      plannedReps: 10,
+      log: mockExerciseLog,
+    },
   ]),
   upsertExerciseLog: jest.fn(),
   getWorkoutProgress: jest.fn(async () => ({ total: 1, done: 0 })),
@@ -64,7 +72,9 @@ const mockExercise: Exercise = {
 
 const mockExerciseLog: ExerciseLog = {
   id: 10,
+  workout_id: null,
   exercise_id: 1,
+  exercise_name: null,
   date: '2026-08-09',
   done: false,
   weight_used: null,
@@ -110,6 +120,7 @@ describe('telas de treino', () => {
 
     expect(await screen.findByText('Supino')).toBeTruthy();
     expect(screen.getByText('Marcar como feito')).toBeTruthy();
+    expect(screen.getByText('+ Adicionar exercício extra')).toBeTruthy();
     expect(screen.getByText('Salvar treino')).toBeTruthy();
   });
 });

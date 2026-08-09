@@ -3,11 +3,11 @@ import { useCallback, useState } from 'react';
 
 import {
   listExercisesWithLogs,
-  type ExerciseWithLog,
+  type ExecutionItem,
 } from '@/src/services/workout-execution';
 
 export function useWorkoutExecution(workoutId: number, date: string) {
-  const [items, setItems] = useState<ExerciseWithLog[] | null>(null);
+  const [items, setItems] = useState<ExecutionItem[] | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const refresh = useCallback(async () => {

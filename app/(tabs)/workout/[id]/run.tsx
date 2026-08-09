@@ -1,24 +1,28 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
 
 import { Button } from '@/src/components/Button';
 import { ExerciseLogRow } from '@/src/components/workout/ExerciseLogRow';
 import { useKeyboardHeight } from '@/src/hooks/useKeyboardHeight';
-import { useWorkoutExecution } from '@/src/hooks/useWorkoutExecution';
-import { upsertExerciseLog, type ExerciseLogInput } from '@/src/services/workout-execution';
 import { useWorkout } from '@/src/hooks/useWorkout';
+import { useWorkoutExecution } from '@/src/hooks/useWorkoutExecution';
+import {
+  upsertExerciseLog,
+  type ExerciseLogInput,
+  type ExecutionItem,
+} from '@/src/services/workout-execution';
 import { todayISO } from '@/src/utils/date';
 
 type LogDraft = {
   done: boolean;
   weightUsed: string;
-  actualSets: string;
   actualReps: string;
   notes: string;
+  name?: string;
 };
 
-const EMPTY_DRAFT: LogDraft = { done: false, weightUsed: '', actualSets: '', actualReps: '', notes: '' };
+const EMPTY_DRAFT: LogDraft = { done: false, weightUsed: '', actualReps: '', notes: '' };
 
 export default function WorkoutRunScreen() {
   const router = useRouter();
@@ -30,65 +34,111 @@ export default function WorkoutRunScreen() {
   const keyboardHeight = useKeyboardHeight();
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
-  const [drafts, setDrafts] = useState<Record<number, LogDraft>>({});
+  const [drafts, setDrafts] = useState<Record<string, LogDraft>>({});
+  const [extraKeys, setExtraKeys] = useState<string[]>([]);
+
+  const nextExtraKey = useCallback(() => {
+    const base = `x-new-${Date.now()}`;
+    let key = base;
+    let i = 2;
+    while (key in drafts || extraKeys.includes(key)) {
+      key = `${base}-${i}`;
+      i += 1;
+    }
+    return key;
+  }, [drafts, extraKeys]);
 
   useEffect(() => {
     if (!items) return;
     setDrafts(
       Object.fromEntries(
-        items.map((item) => {
-          const log = item.log;
-          return [
-            item.exercise.id,
-            {
-              done: log?.done ?? false,
-              weightUsed: log?.weight_used != null ? String(log.weight_used) : '',
-              actualSets: log?.actual_sets != null ? String(log.actual_sets) : '',
-              actualReps: log?.actual_reps != null ? String(log.actual_reps) : '',
-              notes: log?.notes ?? '',
-            },
-          ];
-        }),
+        items.map((item) => [
+          item.key,
+          {
+            done: item.log?.done ?? false,
+            weightUsed: item.log?.weight_used != null ? String(item.log.weight_used) : '',
+            actualReps: item.log?.actual_reps ?? '',
+            notes: item.log?.notes ?? '',
+            ...(item.isExtra && { name: item.log?.exercise_name ?? '' }),
+          },
+        ]),
       ),
     );
   }, [items]);
 
-  const patches = useCallback(
-    (exerciseId: number) => ({
-      draft: drafts[exerciseId] ?? EMPTY_DRAFT,
-      patch: (update: Partial<LogDraft>) =>
-        setDrafts((current) => ({
-          ...current,
-          [exerciseId]: { ...(current[exerciseId] ?? EMPTY_DRAFT), ...update },
-        })),
-    }),
-    [drafts],
-  );
+  const patchDraft = useCallback((key: string, patch: Partial<LogDraft>) => {
+    setDrafts((current) => ({
+      ...current,
+      [key]: { ...(current[key] ?? EMPTY_DRAFT), ...patch },
+    }));
+  }, []);
+
+  const addExtra = () => {
+    const key = nextExtraKey();
+    setExtraKeys((current) => [...current, key]);
+  };
+
+  const removeExtra = (key: string) => {
+    setExtraKeys((current) => current.filter((extraKey) => extraKey !== key));
+    setDrafts((current) => {
+      const next = { ...current };
+      delete next[key];
+      return next;
+    });
+  };
 
   const handleSave = async () => {
     if (!detail) return;
     setSaving(true);
     setSaveError(null);
     try {
-      const inputs: ExerciseLogInput[] = detail.exercises.map((exercise) => {
-        const draft = drafts[exercise.id] ?? EMPTY_DRAFT;
+      const inputs: ExerciseLogInput[] = [];
+
+      for (const item of items ?? []) {
+        const draft = drafts[item.key] ?? EMPTY_DRAFT;
         const hasData =
-          draft.done || draft.weightUsed || draft.actualSets || draft.actualReps || draft.notes;
+          draft.done || draft.weightUsed || draft.actualReps || draft.notes || draft.name;
 
         if (!hasData) {
-          return { exerciseId: exercise.id, date, done: false };
+          if (item.exerciseId != null) {
+            inputs.push({ exerciseId: item.exerciseId, date, done: false });
+          }
+          continue;
         }
 
-        return {
-          exerciseId: exercise.id,
+        const base = {
           date,
           done: draft.done,
           weightUsed: draft.weightUsed ? Number(draft.weightUsed) : undefined,
-          actualSets: draft.actualSets ? Number(draft.actualSets) : undefined,
-          actualReps: draft.actualReps ? Number(draft.actualReps) : undefined,
+          actualReps: draft.actualReps || undefined,
           notes: draft.notes || undefined,
         };
-      });
+
+        if (item.isExtra) {
+          const name = draft.name?.trim();
+          if (!name) continue;
+          inputs.push({ workoutId, exerciseName: name, ...base });
+        } else {
+          inputs.push({ exerciseId: item.exerciseId!, ...base });
+        }
+      }
+
+      for (const key of extraKeys) {
+        const draft = drafts[key] ?? EMPTY_DRAFT;
+        const name = draft.name?.trim();
+        if (!name) continue;
+        const hasData = draft.done || draft.weightUsed || draft.actualReps || draft.notes;
+        if (!hasData) continue;
+        inputs.push({
+          workoutId,
+          exerciseName: name,
+          date,
+          done: draft.done,
+          weightUsed: draft.weightUsed ? Number(draft.weightUsed) : undefined,
+          actualReps: draft.actualReps || undefined,
+          notes: draft.notes || undefined,
+        });
+      }
 
       for (const input of inputs) {
         await upsertExerciseLog(input);
@@ -117,6 +167,31 @@ export default function WorkoutRunScreen() {
     );
   }
 
+  const renderItem = (item: ExecutionItem) => {
+    const draft = drafts[item.key] ?? EMPTY_DRAFT;
+    return (
+      <ExerciseLogRow
+        key={item.key}
+        name={item.name}
+        editedName={draft.name ?? ''}
+        isExtra={item.isExtra}
+        plannedSets={item.plannedSets}
+        plannedReps={item.plannedReps}
+        done={draft.done}
+        weightUsed={draft.weightUsed}
+        actualReps={draft.actualReps}
+        notes={draft.notes}
+        onChange={(patch) => patchDraft(item.key, patch)}
+        onToggleDone={() => patchDraft(item.key, { done: !draft.done })}
+        onRemove={item.isExtra ? () => removeExtra(item.key) : undefined}
+      />
+    );
+  };
+
+  const doneCount = [...(items ?? []), ...extraKeys].filter(
+    (item) => drafts[typeof item === 'string' ? item : item.key]?.done || false,
+  ).length;
+
   return (
     <ScrollView
       className="flex-1 bg-white dark:bg-black"
@@ -131,28 +206,37 @@ export default function WorkoutRunScreen() {
           <Text className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">{date}</Text>
         </View>
         <Text className="text-sm font-semibold text-neutral-500 dark:text-neutral-400">
-          {items.filter((item) => drafts[item.exercise.id]?.done ?? false).length}/{items.length}
+          {doneCount}/{items.length + extraKeys.length}
         </Text>
       </View>
 
-      {items.map((item) => {
-        const { draft, patch } = patches(item.exercise.id);
+      {items.map(renderItem)}
+      {extraKeys.map((key) => {
+        const draft = drafts[key] ?? EMPTY_DRAFT;
         return (
           <ExerciseLogRow
-            key={item.exercise.id}
-            name={item.exercise.name}
-            plannedSets={item.exercise.planned_sets}
-            plannedReps={item.exercise.planned_reps}
+            key={key}
+            name=""
+            editedName={draft.name ?? ''}
+            isExtra
+            plannedSets={null}
+            plannedReps={null}
             done={draft.done}
             weightUsed={draft.weightUsed}
-            actualSets={draft.actualSets}
             actualReps={draft.actualReps}
             notes={draft.notes}
-            onChange={patch}
-            onToggleDone={() => patch({ done: !draft.done })}
+            onChange={(patch) => patchDraft(key, patch)}
+            onToggleDone={() => patchDraft(key, { done: !draft.done })}
+            onRemove={() => removeExtra(key)}
           />
         );
       })}
+
+      <Pressable onPress={addExtra} className="mt-1 self-start py-2">
+        <Text className="text-sm font-semibold text-indigo-600 dark:text-indigo-400">
+          + Adicionar exercício extra
+        </Text>
+      </Pressable>
 
       {saveError ? <Text className="mb-3 text-center text-sm text-red-500">{saveError}</Text> : null}
 
