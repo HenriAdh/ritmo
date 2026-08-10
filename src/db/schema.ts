@@ -36,6 +36,7 @@ export const workoutSchedules = sqliteTable('workout_schedules', {
     .notNull()
     .references(() => workouts.id, { onDelete: 'cascade' }),
   weekday: integer('weekday').notNull(),
+  time: text('time'),
 }, (table) => ({
   workoutWeekdayUnique: uniqueIndex('workout_schedules_workout_id_weekday_unique').on(
     table.workout_id,

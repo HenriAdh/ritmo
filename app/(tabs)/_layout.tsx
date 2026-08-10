@@ -26,8 +26,8 @@ export default function TabLayout() {
         options={{ title: 'Home', tabBarIcon: tabIcon('home') }}
       />
       <Tabs.Screen
-        name="plan/[weekday]"
-        options={{ href: null, title: 'Planejar dia' }}
+        name="plan"
+        options={{ title: 'Planejar', tabBarIcon: tabIcon('calendar-month') }}
       />
       <Tabs.Screen
         name="workout"

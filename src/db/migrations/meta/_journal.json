@@ -29,6 +29,13 @@
       "when": 1786319437626,
       "tag": "0003_concerned_ultimo",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1786320386937,
+      "tag": "0004_fuzzy_killmonger",
+      "breakpoints": true
     }
   ]
 }

@@ -4,7 +4,14 @@ import { db } from '@/src/db/client';
 import { workoutSchedules, workouts } from '@/src/db/schema';
 import type { Workout } from '@/src/types';
 
-export type WeekdayWorkouts = Partial<Record<number, Workout[]>>;
+export type ScheduledDay = {
+  weekday: number;
+  time: string | null;
+};
+
+export type WeekdayWorkouts = Partial<
+  Record<number, { workout: Workout; time: string | null }[]>
+>;
 
 export const WEEKDAY_NAMES = [
   'Segunda',
@@ -20,25 +27,28 @@ export function weekdayName(weekday: number): string {
   return WEEKDAY_NAMES[weekday] ?? String(weekday);
 }
 
-export async function getWorkoutWeekdays(workoutId: number): Promise<number[]> {
+export async function getWorkoutWeekdays(workoutId: number): Promise<ScheduledDay[]> {
   const rows = await db
     .select()
     .from(workoutSchedules)
     .where(eq(workoutSchedules.workout_id, workoutId));
-  return rows.map((row) => row.weekday);
+  return rows.map((row) => ({ weekday: row.weekday, time: row.time }));
 }
 
 export async function setWorkoutWeekdays(
   workoutId: number,
-  weekdays: number[],
+  weekdays: ScheduledDay[],
 ): Promise<void> {
-  const unique = [...new Set(weekdays)];
+  const unique = new Map<number, string | null>();
+  for (const day of weekdays) {
+    unique.set(day.weekday, day.time ?? null);
+  }
 
   db.transaction((tx) => {
     tx.delete(workoutSchedules).where(eq(workoutSchedules.workout_id, workoutId)).run();
 
-    for (const weekday of unique) {
-      tx.insert(workoutSchedules).values({ workout_id: workoutId, weekday }).run();
+    for (const [weekday, time] of unique) {
+      tx.insert(workoutSchedules).values({ workout_id: workoutId, weekday, time }).run();
     }
   });
 }
@@ -57,28 +67,34 @@ export async function listWeekdayWorkouts(userId: number): Promise<WeekdayWorkou
     }
     const list = result[schedule.weekday];
     if (list) {
-      list.push(workout);
+      list.push({ workout, time: schedule.time });
     } else {
-      result[schedule.weekday] = [workout];
+      result[schedule.weekday] = [{ workout, time: schedule.time }];
     }
   }
 
   return result;
 }
 
+export type WorkoutWithSchedule = {
+  workout: Workout;
+  weekdays: ScheduledDay[];
+};
+
 export async function listWorkoutsWithWeekdays(
   userId: number,
-): Promise<{ workout: Workout; weekdays: number[] }[]> {
+): Promise<WorkoutWithSchedule[]> {
   const workoutRows = await db.select().from(workouts).where(eq(workouts.user_id, userId));
   const scheduleRows = await db.select().from(workoutSchedules);
 
-  const daysByWorkout = new Map<number, number[]>();
+  const daysByWorkout = new Map<number, ScheduledDay[]>();
   for (const schedule of scheduleRows) {
     const days = daysByWorkout.get(schedule.workout_id);
+    const day = { weekday: schedule.weekday, time: schedule.time };
     if (days) {
-      days.push(schedule.weekday);
+      days.push(day);
     } else {
-      daysByWorkout.set(schedule.workout_id, [schedule.weekday]);
+      daysByWorkout.set(schedule.workout_id, [day]);
     }
   }
 
