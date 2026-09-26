@@ -8,3 +8,36 @@ export function toISODate(date: Date): string {
 export function todayISO(): string {
   return toISODate(new Date());
 }
+
+// Montado à mão em vez de usar toLocaleDateString: o Hermes vem com ICU
+// reduzido no Android e cairia para o inglês sem a lib de internationalização.
+const LONG_WEEKDAY_NAMES = [
+  'domingo',
+  'segunda-feira',
+  'terça-feira',
+  'quarta-feira',
+  'quinta-feira',
+  'sexta-feira',
+  'sábado',
+];
+
+const MONTH_NAMES = [
+  'janeiro',
+  'fevereiro',
+  'março',
+  'abril',
+  'maio',
+  'junho',
+  'julho',
+  'agosto',
+  'setembro',
+  'outubro',
+  'novembro',
+  'dezembro',
+];
+
+export function formatLongDate(date: Date): string {
+  const weekday = LONG_WEEKDAY_NAMES[date.getDay()] ?? '';
+  const month = MONTH_NAMES[date.getMonth()] ?? '';
+  return `${weekday}, ${date.getDate()} de ${month}`;
+}

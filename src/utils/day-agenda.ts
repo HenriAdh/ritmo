@@ -5,6 +5,7 @@ export type DayAgendaKind = 'workout' | 'meal';
 export type DayAgendaItem = {
   key: string;
   kind: DayAgendaKind;
+  id: number;
   title: string;
   time: string | null;
 };
@@ -58,12 +59,14 @@ export function buildDayAgenda(
     ...workoutEntries.map(({ workout, time }) => ({
       key: `workout-${workout.id}`,
       kind: 'workout' as const,
+      id: workout.id,
       title: workout.title,
       time,
     })),
     ...mealEntries.map(({ meal, time }) => ({
       key: `meal-${meal.id}`,
       kind: 'meal' as const,
+      id: meal.id,
       title: meal.name,
       time,
     })),
