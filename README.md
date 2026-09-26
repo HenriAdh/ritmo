@@ -78,7 +78,7 @@ O banco é criado automaticamente no primeiro start, em `ritmo.db`, junto com as
 ### Verificação de qualidade
 
 ```bash
-npm test                # 24 suítes, 200 testes, ~7s
+npm test                # 24 suítes, 201 testes, ~7s
 npm run lint            # expo lint (eslint-config-expo)
 npx tsc --noEmit        # typecheck
 ```

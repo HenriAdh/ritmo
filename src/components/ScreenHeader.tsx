@@ -29,11 +29,16 @@ const TONE_CLASSES: Record<NonNullable<HeaderAction['tone']>, string> = {
   danger: 'text-red-600 dark:text-red-500',
 };
 
-// Quadrado com duas bordas girado 45 graus: um chevron que não depende de
-// nenhuma fonte de ícone, que o projeto ainda não tem resolvida.
+/** Respiro entre o topo da tela e o título, somado ao inset da safe area. */
+const TOP_PADDING = 12;
+
+// Canto de duas bordas girado 45 graus: um chevron que não depende de nenhuma
+// fonte de ícone, que o projeto ainda não tem resolvida. Borda de cima + da
+// esquerda põem o vértice no alto, e o giro de 45 graus abre os dois braços
+// para baixo, deixando a ponta apontando para cima.
 function BackChevron() {
   return (
-    <View className="h-3.5 w-3.5 -rotate-45 border-b-2 border-l-2 border-neutral-900 dark:border-neutral-100" />
+    <View className="h-3.5 w-3.5 rotate-45 border-l-2 border-t-2 border-neutral-900 dark:border-neutral-100" />
   );
 }
 
@@ -67,7 +72,8 @@ export function ScreenHeader({ title, subtitle, onBack, actions, right }: Screen
 
   return (
     <View
-      style={{ paddingTop: insets.top }}
+      testID="screen-header"
+      style={{ paddingTop: insets.top + TOP_PADDING }}
       className="bg-white px-4 pb-4 dark:bg-black">
       <View className="flex-row items-start">
         {onBack ? (

@@ -3,6 +3,15 @@ import { Text } from 'react-native';
 
 import { ScreenHeader } from '@/src/components/ScreenHeader';
 
+const INSETS = { top: 47, bottom: 0, left: 0, right: 0 };
+
+jest.mock('react-native-safe-area-context', () => ({
+  useSafeAreaInsets: () => INSETS,
+  useSafeAreaFrame: () => ({ x: 0, y: 0, width: 390, height: 844 }),
+  SafeAreaProvider: ({ children }: { children: React.ReactNode }) => children,
+  SafeAreaView: ({ children }: { children: React.ReactNode }) => children,
+}));
+
 describe('ScreenHeader', () => {
   it('mostra título e subtítulo', () => {
     render(<ScreenHeader title="Treinos" subtitle="3 cadastrados" />);
@@ -81,5 +90,14 @@ describe('ScreenHeader', () => {
     render(<ScreenHeader title="Supino reto" right={<Text>2/5</Text>} />);
 
     expect(screen.getByText('2/5')).toBeTruthy();
+  });
+
+  it('soma o respiro do título ao inset da safe area', () => {
+    render(<ScreenHeader title="Treinos" />);
+
+    const header = screen.getByTestId('screen-header');
+    const style = header.props.style as { paddingTop: number };
+
+    expect(style.paddingTop).toBe(INSETS.top + 12);
   });
 });
