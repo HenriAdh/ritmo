@@ -18,6 +18,8 @@ interface RunResult {
 
 const insertResult: unknown[] = [];
 const insertValues: Record<string, unknown>[] = [];
+const updateValues: Record<string, unknown>[] = [];
+let deleteCalls = 0;
 let selectQueue: unknown[][];
 
 export const mockDb = {
@@ -62,6 +64,8 @@ export function resetDb(): void {
   selectQueue = [];
   insertResult.length = 0;
   insertValues.length = 0;
+  updateValues.length = 0;
+  deleteCalls = 0;
   jest.clearAllMocks();
 
   mockDb.select.mockImplementation(() => ({
@@ -79,18 +83,24 @@ export function resetDb(): void {
   }));
 
   mockDb.update.mockImplementation(() => ({
-    set: () => ({
+    set: (values: Record<string, unknown>) => {
+      updateValues.push(values);
+      return {
+        where: () => ({
+          run: () => emptyRun(),
+        }),
+      };
+    },
+  }));
+
+  mockDb.delete.mockImplementation(() => {
+    deleteCalls += 1;
+    return {
       where: () => ({
         run: () => emptyRun(),
       }),
-    }),
-  }));
-
-  mockDb.delete.mockImplementation(() => ({
-    where: () => ({
-      run: () => emptyRun(),
-    }),
-  }));
+    };
+  });
 
   mockDb.transaction.mockImplementation((callback: (tx: typeof mockDb) => unknown) =>
     callback(mockDb),
@@ -112,6 +122,14 @@ export function setInsertResult(...rows: unknown[]): void {
 
 export function getInsertValues(): Record<string, unknown>[] {
   return insertValues;
+}
+
+export function getUpdateValues(): Record<string, unknown>[] {
+  return updateValues;
+}
+
+export function getDeleteCalls(): number {
+  return deleteCalls;
 }
 
 export const db = mockDb;

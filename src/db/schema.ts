@@ -148,6 +148,9 @@ export const weighIns = sqliteTable('weigh_ins', {
     .references(() => users.id, { onDelete: 'cascade' }),
   date: text('date').notNull(),
   weight: real('weight').notNull(),
+  // Uri do asset escolhido na galeria, não o arquivo. Se a pessoa apagar a
+  // foto da galeria, o registro fica sem imagem: a tela trata como ausente.
+  photo_uri: text('photo_uri'),
   measurements: text('measurements', { mode: 'json' }),
 });
 

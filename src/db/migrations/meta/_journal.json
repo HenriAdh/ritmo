@@ -57,6 +57,13 @@
       "when": 1790453424057,
       "tag": "0007_meal_log_item_extras",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "6",
+      "when": 1790460350378,
+      "tag": "0008_weigh_in_photo",
+      "breakpoints": true
     }
   ]
 }

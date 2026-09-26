@@ -86,7 +86,9 @@ Alimentadas pelos dados registrados nos checklists:
 
 **Ligadas ao bem-estar geral**
 
-- Foto de progresso (linha do tempo visual)
+- Foto de progresso (linha do tempo visual) — entregue como `photo_uri` em
+  `weigh_ins`, mas continua listado aqui porque a versão original do documento
+  não previa foto nenhuma na tabela.
 - Nível de energia/disposição no dia do treino
 - Água bebida no dia
 - Horas de sono
@@ -182,7 +184,11 @@ Alimentadas pelos dados registrados nos checklists:
 
 ### weigh_ins (acompanhamento de peso corporal)
 
-`id, user_id, date, weight, measurements (opcional)`
+`id, user_id, date, weight, photo_uri (opcional), measurements (opcional)`
+
+`photo_uri` guarda a referência ao asset escolhido na galeria, não uma cópia do
+arquivo. Consequência aceita: se a pessoa apagar a foto da galeria, o registro
+perde a imagem e a tela mostra "Foto indisponível" no lugar.
 
 ### settings
 

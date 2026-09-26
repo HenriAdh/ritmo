@@ -35,6 +35,7 @@ export default function RootLayout() {
         <Stack>
           <Stack.Protected guard={user !== null}>
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="progress" options={{ headerShown: false }} />
           </Stack.Protected>
           <Stack.Protected guard={user === null}>
             <Stack.Screen name="(auth)" options={{ headerShown: false }} />

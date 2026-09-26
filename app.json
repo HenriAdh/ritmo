@@ -9,7 +9,10 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "Escolher uma foto sua para acompanhar a evolução do peso."
+      }
     },
     "android": {
       "package": "com.henriadh.ritmo",
@@ -43,7 +46,13 @@
           }
         }
       ],
-      "expo-sqlite"
+      "expo-sqlite",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Escolher uma foto sua para acompanhar a evolução do peso."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,
