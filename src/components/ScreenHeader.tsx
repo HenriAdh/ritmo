@@ -33,12 +33,12 @@ const TONE_CLASSES: Record<NonNullable<HeaderAction['tone']>, string> = {
 const TOP_PADDING = 12;
 
 // Canto de duas bordas girado 45 graus: um chevron que não depende de nenhuma
-// fonte de ícone, que o projeto ainda não tem resolvida. Borda de cima + da
-// esquerda põem o vértice no alto, e o giro de 45 graus abre os dois braços
-// para baixo, deixando a ponta apontando para cima.
+// fonte de ícone, que o projeto ainda não tem resolvida. Borda de baixo + da
+// direita põem o vértice no canto inferior direito, e o giro de 45 graus abre
+// os dois braços para a esquerda, deixando a ponta apontando para a esquerda.
 function BackChevron() {
   return (
-    <View className="h-3.5 w-3.5 rotate-45 border-l-2 border-t-2 border-neutral-900 dark:border-neutral-100" />
+    <View className="h-3.5 w-3.5 -rotate-45 border-b-2 border-r-2 border-neutral-900 dark:border-neutral-100" />
   );
 }
 
