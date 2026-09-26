@@ -100,4 +100,20 @@ describe('ScreenHeader', () => {
 
     expect(style.paddingTop).toBe(INSETS.top + 12);
   });
+
+  it('mantém o chevron de voltar apontando para a esquerda', () => {
+    render(<ScreenHeader title="Treino A" onBack={jest.fn()} />);
+
+    // A ponta do chevron é o vértice do canto. Com border-b + border-l o
+    // vértice fica embaixo à esquerda, e rotate-45 abre os braços para a
+    // direita, o que aponta para a esquerda. Inverter um dos dois eixos
+    // quebra a direção, então o par precisa ficar travado aqui.
+    const chevron = screen.getByTestId('back-chevron');
+    const className = String(chevron.props.className);
+
+    expect(className).toContain('rotate-45');
+    expect(className).not.toContain('-rotate-45');
+    expect(className).toContain('border-l-2');
+    expect(className).not.toContain('border-r-2');
+  });
 });
