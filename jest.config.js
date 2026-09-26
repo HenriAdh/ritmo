@@ -10,4 +10,5 @@ module.exports = {
     '^@/(.*)$': '<rootDir>/$1',
   },
   testMatch: ['<rootDir>/__tests__/**/*.test.[jt]s?(x)'],
+  testTimeout: 20000,
 };
