@@ -7,6 +7,7 @@ import type {
   groceryItems,
   ingredients,
   mealLogs,
+  mealSchedules,
   meals,
   settings,
   users,
@@ -21,6 +22,7 @@ export type Exercise = InferSelectModel<typeof exercises>;
 export type ExerciseLog = InferSelectModel<typeof exerciseLogs>;
 export type WorkoutSchedule = InferSelectModel<typeof workoutSchedules>;
 export type Meal = InferSelectModel<typeof meals>;
+export type MealSchedule = InferSelectModel<typeof mealSchedules>;
 export type Ingredient = InferSelectModel<typeof ingredients>;
 export type MealLog = InferSelectModel<typeof mealLogs>;
 export type GroceryItem = InferSelectModel<typeof groceryItems>;

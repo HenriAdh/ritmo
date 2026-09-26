@@ -36,6 +36,13 @@
       "when": 1786320386937,
       "tag": "0004_fuzzy_killmonger",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1790451392227,
+      "tag": "0005_last_alex_wilder",
+      "breakpoints": true
     }
   ]
 }

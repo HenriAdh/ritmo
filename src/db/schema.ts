@@ -63,9 +63,21 @@ export const meals = sqliteTable('meals', {
     .notNull()
     .references(() => users.id, { onDelete: 'cascade' }),
   name: text('name').notNull(),
-  time: text('time').notNull(),
-  weekday: integer('weekday').notNull(),
 });
+
+export const mealSchedules = sqliteTable('meal_schedules', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  meal_id: integer('meal_id')
+    .notNull()
+    .references(() => meals.id, { onDelete: 'cascade' }),
+  weekday: integer('weekday').notNull(),
+  time: text('time'),
+}, (table) => ({
+  mealWeekdayUnique: uniqueIndex('meal_schedules_meal_id_weekday_unique').on(
+    table.meal_id,
+    table.weekday,
+  ),
+}));
 
 export const ingredients = sqliteTable('ingredients', {
   id: integer('id').primaryKey({ autoIncrement: true }),
