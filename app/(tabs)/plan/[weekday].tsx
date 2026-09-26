@@ -9,8 +9,8 @@ import { useAuthStore } from '@/src/stores/auth-store';
 import {
   listWorkoutsWithWeekdays,
   setWorkoutWeekdays,
-  weekdayName,
 } from '@/src/services/workout-plan';
+import { weekdayName } from '@/src/utils/weekday';
 
 type WorkoutRow = {
   workoutId: number;

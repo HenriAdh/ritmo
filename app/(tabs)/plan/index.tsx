@@ -3,7 +3,7 @@ import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-nati
 
 import { useAuthStore } from '@/src/stores/auth-store';
 import { useWorkoutPlan } from '@/src/hooks/useWorkoutPlan';
-import { WEEKDAY_NAMES } from '@/src/services/workout-plan';
+import { WEEKDAY_NAMES } from '@/src/utils/weekday';
 
 export default function PlanScreen() {
   const router = useRouter();

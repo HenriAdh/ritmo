@@ -5,7 +5,6 @@ import {
   listWorkoutsWithWeekdays,
   removeWorkoutFromWeekday,
   setWorkoutWeekdays,
-  weekdayName,
 } from '@/src/services/workout-plan';
 
 jest.mock('@/src/db/client');
@@ -114,12 +113,5 @@ describe('removeWorkoutFromWeekday', () => {
     await removeWorkoutFromWeekday(1, 4);
 
     expect(getDbMock().mockDb.delete).toHaveBeenCalled();
-  });
-});
-
-describe('weekdayName', () => {
-  it('retorna o nome do dia por índice', () => {
-    expect(weekdayName(0)).toBe('Segunda');
-    expect(weekdayName(6)).toBe('Domingo');
   });
 });

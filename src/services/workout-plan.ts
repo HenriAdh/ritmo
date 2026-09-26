@@ -13,20 +13,6 @@ export type WeekdayWorkouts = Partial<
   Record<number, { workout: Workout; time: string | null }[]>
 >;
 
-export const WEEKDAY_NAMES = [
-  'Segunda',
-  'Terça',
-  'Quarta',
-  'Quinta',
-  'Sexta',
-  'Sábado',
-  'Domingo',
-];
-
-export function weekdayName(weekday: number): string {
-  return WEEKDAY_NAMES[weekday] ?? String(weekday);
-}
-
 export async function getWorkoutWeekdays(workoutId: number): Promise<ScheduledDay[]> {
   const rows = await db
     .select()
