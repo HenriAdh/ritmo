@@ -6,13 +6,11 @@ import { TextField } from '@/src/components/TextField';
 import { useKeyboardHeight } from '@/src/hooks/useKeyboardHeight';
 import {
   createMeal,
-  isValidTime,
   updateMeal,
   type IngredientInput,
   type MealDetail,
 } from '@/src/services/meals';
 import { useAuthStore } from '@/src/stores/auth-store';
-import { WEEKDAY_NAMES, todayWeekday } from '@/src/utils/weekday';
 
 type IngredientRow = {
   name: string;
@@ -30,8 +28,6 @@ const EMPTY_INGREDIENT: IngredientRow = { name: '', quantity: '', unit: '' };
 export function MealForm({ initial, onSaved }: MealFormProps) {
   const user = useAuthStore((state) => state.user);
   const [name, setName] = useState(initial?.meal.name ?? '');
-  const [time, setTime] = useState(initial?.meal.time ?? '');
-  const [weekday, setWeekday] = useState(initial?.meal.weekday ?? todayWeekday());
   const [rows, setRows] = useState<IngredientRow[]>(
     initial
       ? initial.ingredients.map((ingredient) => ({
@@ -65,12 +61,6 @@ export function MealForm({ initial, onSaved }: MealFormProps) {
       return;
     }
 
-    const trimmedTime = time.trim();
-    if (!isValidTime(trimmedTime)) {
-      setError('Informe um horário válido no formato HH:MM');
-      return;
-    }
-
     const ingredients: IngredientInput[] = [];
     for (const row of rows) {
       const ingredientName = row.name.trim();
@@ -99,15 +89,9 @@ export function MealForm({ initial, onSaved }: MealFormProps) {
     setSaving(true);
     try {
       if (initial) {
-        await updateMeal({ id: initial.meal.id, name: trimmedName, time: trimmedTime, weekday, ingredients });
+        await updateMeal({ id: initial.meal.id, name: trimmedName, ingredients });
       } else {
-        await createMeal({
-          userId: user.id,
-          name: trimmedName,
-          time: trimmedTime,
-          weekday,
-          ingredients,
-        });
+        await createMeal({ userId: user.id, name: trimmedName, ingredients });
       }
       onSaved();
     } catch (err) {
@@ -130,47 +114,11 @@ export function MealForm({ initial, onSaved }: MealFormProps) {
         value={name}
         onChangeText={setName}
         placeholder="Ex.: Arroz, feijão e frango"
-        className="mb-6"
+        className="mb-2"
       />
-
-      <Text className="mb-2 text-sm font-medium text-neutral-500 dark:text-neutral-400">
-        Horário
+      <Text className="mb-6 text-xs text-neutral-500 dark:text-neutral-400">
+        O dia da semana e o horário você define depois, na aba Planejar.
       </Text>
-      <TextField
-        value={time}
-        onChangeText={setTime}
-        placeholder="12:00"
-        keyboardType="numbers-and-punctuation"
-        className="mb-6"
-      />
-
-      <Text className="mb-2 text-sm font-medium text-neutral-500 dark:text-neutral-400">
-        Dia da semana
-      </Text>
-      <View className="mb-6 flex-row flex-wrap gap-2">
-        {WEEKDAY_NAMES.map((dayName, index) => {
-          const selected = weekday === index;
-          return (
-            <Pressable
-              key={dayName}
-              onPress={() => setWeekday(index)}
-              className={`rounded-full px-3 py-2 ${
-                selected
-                  ? 'bg-neutral-900 dark:bg-neutral-100'
-                  : 'border border-neutral-300 dark:border-neutral-700'
-              }`}>
-              <Text
-                className={`text-sm ${
-                  selected
-                    ? 'font-semibold text-white dark:text-black'
-                    : 'text-neutral-600 dark:text-neutral-300'
-                }`}>
-                {dayName}
-              </Text>
-            </Pressable>
-          );
-        })}
-      </View>
 
       <Text className="mb-2 text-sm font-medium text-neutral-500 dark:text-neutral-400">
         Ingredientes

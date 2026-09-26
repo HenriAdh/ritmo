@@ -43,6 +43,20 @@
       "when": 1790451392227,
       "tag": "0005_last_alex_wilder",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1790452931412,
+      "tag": "0006_meal_log_items",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "6",
+      "when": 1790453424057,
+      "tag": "0007_meal_log_item_extras",
+      "breakpoints": true
     }
   ]
 }

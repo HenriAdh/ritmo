@@ -7,6 +7,8 @@ import m0002 from './0002_swift_zemo.sql';
 import m0003 from './0003_concerned_ultimo.sql';
 import m0004 from './0004_fuzzy_killmonger.sql';
 import m0005 from './0005_last_alex_wilder.sql';
+import m0006 from './0006_meal_log_items.sql';
+import m0007 from './0007_meal_log_item_extras.sql';
 
   export default {
     journal,
@@ -16,7 +18,9 @@ m0001,
 m0002,
 m0003,
 m0004,
-m0005
+m0005,
+m0006,
+m0007
     }
   }
   

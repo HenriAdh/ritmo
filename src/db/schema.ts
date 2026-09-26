@@ -97,7 +97,24 @@ export const mealLogs = sqliteTable('meal_logs', {
   date: text('date').notNull(),
   status: text('status', { enum: ['eaten', 'not_eaten', 'partial'] }).notNull(),
   notes: text('notes'),
-});
+}, (table) => ({
+  mealLogUnique: uniqueIndex('meal_logs_meal_id_date_unique').on(table.meal_id, table.date),
+}));
+
+export const mealLogItems = sqliteTable('meal_log_items', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  meal_log_id: integer('meal_log_id')
+    .notNull()
+    .references(() => mealLogs.id, { onDelete: 'cascade' }),
+  ingredient_id: integer('ingredient_id').references(() => ingredients.id, { onDelete: 'cascade' }),
+  name: text('name'),
+  quantity: real('quantity'),
+}, (table) => ({
+  mealLogItemUnique: uniqueIndex('meal_log_items_meal_log_id_ingredient_id_unique').on(
+    table.meal_log_id,
+    table.ingredient_id,
+  ),
+}));
 
 export const groceryItems = sqliteTable('grocery_items', {
   id: integer('id').primaryKey({ autoIncrement: true }),

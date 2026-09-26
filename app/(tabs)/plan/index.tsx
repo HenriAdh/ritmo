@@ -1,14 +1,27 @@
 import { useRouter } from 'expo-router';
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
 
+import { DayAgendaRow } from '@/src/components/plan/DayAgendaRow';
 import { useAuthStore } from '@/src/stores/auth-store';
+import { useMealPlan } from '@/src/hooks/useMealPlan';
 import { useWorkoutPlan } from '@/src/hooks/useWorkoutPlan';
+import { buildDayAgenda } from '@/src/utils/day-agenda';
 import { WEEKDAY_NAMES } from '@/src/utils/weekday';
+
+function itemLabel(count: number): string {
+  if (count === 0) {
+    return 'Sem plano';
+  }
+  return count === 1 ? '1 item' : `${count} itens`;
+}
 
 export default function PlanScreen() {
   const router = useRouter();
   const user = useAuthStore((state) => state.user);
-  const { weekdays, error } = useWorkoutPlan(user?.id ?? -1);
+  const { weekdays: workoutWeekdays, error: workoutError } = useWorkoutPlan(user?.id ?? -1);
+  const { weekdays: mealWeekdays, error: mealError } = useMealPlan(user?.id ?? -1);
+
+  const error = workoutError ?? mealError;
 
   if (error) {
     return (
@@ -18,7 +31,7 @@ export default function PlanScreen() {
     );
   }
 
-  if (weekdays === null) {
+  if (workoutWeekdays === null || mealWeekdays === null) {
     return (
       <View className="flex-1 items-center justify-center bg-white dark:bg-black">
         <ActivityIndicator />
@@ -41,7 +54,9 @@ export default function PlanScreen() {
 
       {WEEKDAY_NAMES.map((dayName, index) => {
         const weekday = index;
-        const entries = weekdays[weekday] ?? [];
+        const workoutEntries = workoutWeekdays[weekday] ?? [];
+        const mealEntries = mealWeekdays[weekday] ?? [];
+        const total = workoutEntries.length + mealEntries.length;
         return (
           <Pressable
             key={weekday}
@@ -54,28 +69,13 @@ export default function PlanScreen() {
                 {dayName}
               </Text>
               <Text className="text-sm text-neutral-500 dark:text-neutral-400">
-                {entries.length === 0
-                  ? 'Sem plano'
-                  : entries.length === 1
-                    ? '1 item'
-                    : `${entries.length} itens`}
+                {itemLabel(total)}
               </Text>
             </View>
-            {entries.length > 0 ? (
+            {total > 0 ? (
               <View className="mt-2">
-                {entries.map(({ workout, time }) => (
-                  <View
-                    key={workout.id}
-                    className="mb-1 flex-row items-center justify-between rounded-lg bg-neutral-100 px-3 py-2 dark:bg-neutral-900">
-                    <Text className="flex-1 text-sm text-neutral-700 dark:text-neutral-300">
-                      {workout.title}
-                    </Text>
-                    {time ? (
-                      <Text className="ml-2 text-sm text-indigo-600 dark:text-indigo-400">
-                        {time}
-                      </Text>
-                    ) : null}
-                  </View>
+                {buildDayAgenda(workoutEntries, mealEntries).map((item) => (
+                  <DayAgendaRow key={item.key} item={item} />
                 ))}
               </View>
             ) : null}

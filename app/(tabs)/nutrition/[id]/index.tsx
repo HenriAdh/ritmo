@@ -10,7 +10,7 @@ export default function MealDetailScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
   const mealId = Number(id);
-  const { detail, error } = useMeal(mealId);
+  const { detail, weekdays, error } = useMeal(mealId);
 
   const confirmDelete = () => {
     if (!detail) return;
@@ -47,14 +47,15 @@ export default function MealDetailScreen() {
             <Text className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">
               {detail.meal.name}
             </Text>
-            <View className="mt-2 flex-row items-center gap-3">
-              <Text className="text-sm text-neutral-500 dark:text-neutral-400">
-                {weekdayName(detail.meal.weekday)}
-              </Text>
-              <Text className="text-sm text-indigo-600 dark:text-indigo-400">
-                {detail.meal.time}
-              </Text>
-            </View>
+            <Text className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
+              {weekdays.length === 0
+                ? 'Nenhum dia vinculado'
+                : `Planejada em ${weekdays
+                    .slice()
+                    .sort((a, b) => a.weekday - b.weekday)
+                    .map((day) => weekdayName(day.weekday))
+                    .join(', ')}`}
+            </Text>
           </View>
 
           <View className="px-4">
@@ -84,6 +85,11 @@ export default function MealDetailScreen() {
           </View>
 
           <View className="mt-auto border-t border-neutral-200 p-4 dark:border-neutral-800">
+            <Button
+              label="Registrar refeição"
+              onPress={() => router.push({ pathname: '/nutrition/[id]/run', params: { id } })}
+              className="mb-3"
+            />
             <Button
               label="Editar"
               onPress={() => router.push({ pathname: '/nutrition/[id]/edit', params: { id } })}
