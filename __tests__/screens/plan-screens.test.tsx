@@ -62,7 +62,7 @@ describe('telas de planejamento', () => {
   it('renderiza a aba Planejar com o resumo semanal', async () => {
     render(<PlanScreen />);
 
-    expect(await screen.findByText('Planejamento da semana')).toBeTruthy();
+    expect(await screen.findByText('Planejar')).toBeTruthy();
     expect(screen.getByText('Segunda')).toBeTruthy();
     expect(screen.getByText('Treino A')).toBeTruthy();
     expect(screen.getByText('18:00')).toBeTruthy();
@@ -86,7 +86,7 @@ describe('telas de planejamento', () => {
     expect(screen.getByText('Cozinha')).toBeTruthy();
     expect(screen.getByText('Compras')).toBeTruthy();
     expect(screen.getByText('Treino A')).toBeTruthy();
-    expect(screen.getByText('Salvar planejamento')).toBeTruthy();
+    expect(screen.getByText('Salvar')).toBeTruthy();
   });
 
   it('renderiza a seção Alimentação com a refeição marcada e o horário', async () => {

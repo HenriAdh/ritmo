@@ -5,5 +5,11 @@ import { MealForm } from '@/src/components/nutrition/MealForm';
 export default function NewMealScreen() {
   const router = useRouter();
 
-  return <MealForm onSaved={() => router.back()} />;
+  return (
+    <MealForm
+      screenTitle="Nova refeição"
+      onSaved={() => router.back()}
+      onCancel={() => router.back()}
+    />
+  );
 }

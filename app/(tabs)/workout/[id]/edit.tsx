@@ -18,5 +18,12 @@ export default function EditWorkoutScreen() {
     );
   }
 
-  return <WorkoutForm initial={detail} onSaved={() => router.back()} />;
+  return (
+    <WorkoutForm
+      initial={detail}
+      screenTitle="Editar treino"
+      onSaved={() => router.back()}
+      onCancel={() => router.back()}
+    />
+  );
 }

@@ -119,12 +119,14 @@ describe('telas de alimentação', () => {
 
     expect(await screen.findByText('Arroz com feijão')).toBeTruthy();
     expect(screen.getByText('1 ingrediente')).toBeTruthy();
-    expect(screen.getByText('Nova refeição')).toBeTruthy();
+    expect(screen.getByText('Refeições')).toBeTruthy();
+    expect(screen.getByText('Nova')).toBeTruthy();
   });
 
   it('renderiza o formulário de nova refeição sem dia da semana', () => {
     render(<NewMealScreen />);
 
+    expect(screen.getByText('Nova refeição')).toBeTruthy();
     expect(screen.getByText('Nome da refeição')).toBeTruthy();
     expect(screen.getByText('Ingredientes')).toBeTruthy();
     expect(screen.getByText('+ Adicionar ingrediente')).toBeTruthy();
@@ -157,6 +159,7 @@ describe('telas de alimentação', () => {
 
     expect(await screen.findByDisplayValue('Arroz com feijão')).toBeTruthy();
     expect(await screen.findByDisplayValue('Arroz')).toBeTruthy();
+    expect(screen.getByText('Editar refeição')).toBeTruthy();
     expect(screen.getByText('Salvar')).toBeTruthy();
   });
 
@@ -199,7 +202,7 @@ describe('telas de alimentação', () => {
     expect(screen.getByPlaceholderText('Quanto comi (g)')).toBeTruthy();
     expect(screen.getByText('Registro: Não comi')).toBeTruthy();
     expect(screen.getByText('+ Adicionar ingrediente extra')).toBeTruthy();
-    expect(screen.getByText('Salvar refeição')).toBeTruthy();
+    expect(screen.getByText('Salvar')).toBeTruthy();
   });
 
   it('salva a refeição marcada com a quantidade de cada ingrediente', async () => {
@@ -211,7 +214,7 @@ describe('telas de alimentação', () => {
 
     expect(await screen.findByText('Registro: Comi parcialmente')).toBeTruthy();
 
-    fireEvent.press(screen.getByText('Salvar refeição'));
+    fireEvent.press(screen.getByText('Salvar'));
 
     expect(upsertMealLogMock).toHaveBeenCalledWith(
       expect.objectContaining({ mealId: 1, done: true, items: [{ ingredientId: 1, quantity: 60 }] }),
@@ -229,7 +232,7 @@ describe('telas de alimentação', () => {
 
     fireEvent.changeText(screen.getByPlaceholderText('Nome do ingrediente extra'), 'Vitamina');
     fireEvent.changeText(screen.getByPlaceholderText('Quanto comi'), '200');
-    fireEvent.press(screen.getByText('Salvar refeição'));
+    fireEvent.press(screen.getByText('Salvar'));
 
     expect(upsertMealLogMock).toHaveBeenCalledWith(
       expect.objectContaining({ extras: [{ name: 'Vitamina', quantity: 200 }] }),
@@ -248,7 +251,7 @@ describe('telas de alimentação', () => {
 
     expect(screen.queryByPlaceholderText('Nome do ingrediente extra')).toBeNull();
 
-    fireEvent.press(screen.getByText('Salvar refeição'));
+    fireEvent.press(screen.getByText('Salvar'));
 
     expect(upsertMealLogMock).toHaveBeenCalledWith(expect.objectContaining({ extras: [] }));
   });

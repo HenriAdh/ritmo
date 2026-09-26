@@ -2,6 +2,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ActivityIndicator, Alert, Text, View } from 'react-native';
 
 import { Button } from '@/src/components/Button';
+import { ScreenHeader } from '@/src/components/ScreenHeader';
 import { useWorkout } from '@/src/hooks/useWorkout';
 import { deleteWorkout } from '@/src/services/workouts';
 
@@ -42,15 +43,17 @@ export default function WorkoutDetailScreen() {
         </View>
       ) : (
         <View className="flex-1">
-          <View className="p-4">
-            <Text className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">
-              {detail.workout.title}
-            </Text>
-            <Text className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
-              {detail.exercises.length} exercício
-              {detail.exercises.length === 1 ? '' : 's'}
-            </Text>
-          </View>
+          <ScreenHeader
+            title={detail.workout.title}
+            subtitle={`${detail.exercises.length} exercício${detail.exercises.length === 1 ? '' : 's'}`}
+            onBack={() => router.back()}
+            actions={[
+              {
+                label: 'Editar',
+                onPress: () => router.push({ pathname: '/workout/[id]/edit', params: { id } }),
+              },
+            ]}
+          />
           <View className="px-4">
             {detail.exercises.map((exercise) => (
               <View
@@ -69,16 +72,9 @@ export default function WorkoutDetailScreen() {
             <Button
               label="Iniciar treino"
               onPress={() => router.push({ pathname: '/workout/[id]/run', params: { id } })}
-              className="mb-3"
-            />
-            <Button
-              label="Editar"
-              onPress={() => router.push({ pathname: '/workout/[id]/edit', params: { id } })}
               className="mb-4"
             />
-            <View className="border-t border-neutral-100 pt-4 dark:border-neutral-900">
-              <Button label="Excluir treino" variant="danger" onPress={confirmDelete} />
-            </View>
+            <Button label="Excluir treino" variant="danger" onPress={confirmDelete} />
           </View>
         </View>
       )}

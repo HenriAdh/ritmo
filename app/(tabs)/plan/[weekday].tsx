@@ -2,7 +2,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
 
-import { Button } from '@/src/components/Button';
+import { ScreenHeader } from '@/src/components/ScreenHeader';
 import { TextField } from '@/src/components/TextField';
 import { useKeyboardHeight } from '@/src/hooks/useKeyboardHeight';
 import { useAuthStore } from '@/src/stores/auth-store';
@@ -151,76 +151,78 @@ export default function PlanWeekdayScreen() {
   }
 
   return (
-    <ScrollView
-      className="flex-1 bg-white dark:bg-black"
-      contentContainerClassName="p-4"
-      contentContainerStyle={{ paddingBottom: keyboardHeight + 12 }}
-      keyboardShouldPersistTaps="handled">
-      <Text className="mb-4 text-2xl font-bold text-neutral-900 dark:text-neutral-100">
-        {weekdayName(weekday)}
-      </Text>
+    <View className="flex-1 bg-white dark:bg-black">
+      <ScreenHeader
+        title={weekdayName(weekday)}
+        onBack={() => router.back()}
+        actions={[{ label: 'Salvar', onPress: handleSave, loading: saving }]}
+      />
 
-      {SECTIONS.map((section) => {
-        const sectionRows =
-          section.key === 'workout' || section.key === 'meal'
-            ? rows.filter((row) => row.kind === section.key)
-            : [];
+      <ScrollView
+        className="flex-1"
+        contentContainerClassName="p-4"
+        contentContainerStyle={{ paddingBottom: keyboardHeight + 12 }}
+        keyboardShouldPersistTaps="handled">
+        {SECTIONS.map((section) => {
+          const sectionRows =
+            section.key === 'workout' || section.key === 'meal'
+              ? rows.filter((row) => row.kind === section.key)
+              : [];
 
-        return (
-          <View
-            key={section.key}
-            className="mb-6 rounded-xl border border-neutral-200 p-4 dark:border-neutral-800">
-            <Text className="mb-3 text-base font-semibold text-neutral-900 dark:text-neutral-100">
-              {section.label}
-            </Text>
-
-            {section.emBreve ? (
-              <Text className="text-sm text-neutral-500 dark:text-neutral-400">
-                Em breve
+          return (
+            <View
+              key={section.key}
+              className="mb-6 rounded-xl border border-neutral-200 p-4 dark:border-neutral-800">
+              <Text className="mb-3 text-base font-semibold text-neutral-900 dark:text-neutral-100">
+                {section.label}
               </Text>
-            ) : sectionRows.length === 0 ? (
-              <Text className="text-sm text-neutral-500 dark:text-neutral-400">
-                {EMPTY_MESSAGE[section.key]}
-              </Text>
-            ) : (
-              sectionRows.map((row) => (
-                <View
-                  key={`${row.kind}-${row.id}`}
-                  className="mb-3 rounded-lg border border-neutral-100 p-3 dark:border-neutral-900">
-                  <Pressable
-                    onPress={() => toggle(row.kind, row.id)}
-                    className="flex-row items-center justify-between">
-                    <Text className="flex-1 text-base font-medium text-neutral-900 dark:text-neutral-100">
-                      {row.title}
-                    </Text>
-                    <View
-                      className={`h-6 w-6 items-center justify-center rounded-md border ${
-                        row.checked
-                          ? 'border-indigo-600 bg-indigo-600'
-                          : 'border-neutral-300 dark:border-neutral-700'
-                      }`}>
-                      {row.checked ? <Text className="text-sm text-white">✓</Text> : null}
-                    </View>
-                  </Pressable>
-                  {row.checked ? (
-                    <TextField
-                      value={row.time}
-                      onChangeText={(text) => setTime(row.kind, row.id, text)}
-                      placeholder="Horário (ex: 18:00)"
-                      keyboardType="numbers-and-punctuation"
-                      className="mt-3"
-                    />
-                  ) : null}
-                </View>
-              ))
-            )}
-          </View>
-        );
-      })}
 
-      {error ? <Text className="mb-4 text-center text-sm text-red-500">{error}</Text> : null}
+              {section.emBreve ? (
+                <Text className="text-sm text-neutral-500 dark:text-neutral-400">
+                  Em breve
+                </Text>
+              ) : sectionRows.length === 0 ? (
+                <Text className="text-sm text-neutral-500 dark:text-neutral-400">
+                  {EMPTY_MESSAGE[section.key]}
+                </Text>
+              ) : (
+                sectionRows.map((row) => (
+                  <View
+                    key={`${row.kind}-${row.id}`}
+                    className="mb-3 rounded-lg border border-neutral-100 p-3 dark:border-neutral-900">
+                    <Pressable
+                      onPress={() => toggle(row.kind, row.id)}
+                      className="flex-row items-center justify-between">
+                      <Text className="flex-1 text-base font-medium text-neutral-900 dark:text-neutral-100">
+                        {row.title}
+                      </Text>
+                      <View
+                        className={`h-6 w-6 items-center justify-center rounded-md border ${
+                          row.checked
+                            ? 'border-indigo-600 bg-indigo-600'
+                            : 'border-neutral-300 dark:border-neutral-700'
+                        }`}>
+                        {row.checked ? <Text className="text-sm text-white">✓</Text> : null}
+                      </View>
+                    </Pressable>
+                    {row.checked ? (
+                      <TextField
+                        value={row.time}
+                        onChangeText={(text) => setTime(row.kind, row.id, text)}
+                        placeholder="Horário (ex: 18:00)"
+                        keyboardType="numbers-and-punctuation"
+                        className="mt-3"
+                      />
+                    ) : null}
+                  </View>
+                ))
+              )}
+            </View>
+          );
+        })}
 
-      <Button label="Salvar planejamento" onPress={handleSave} loading={saving} />
-    </ScrollView>
+        {error ? <Text className="text-center text-sm text-red-500">{error}</Text> : null}
+      </ScrollView>
+    </View>
   );
 }

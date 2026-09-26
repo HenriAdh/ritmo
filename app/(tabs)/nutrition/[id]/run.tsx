@@ -2,7 +2,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
 
-import { Button } from '@/src/components/Button';
+import { ScreenHeader } from '@/src/components/ScreenHeader';
 import { TextField } from '@/src/components/TextField';
 import { IngredientLogRow } from '@/src/components/nutrition/IngredientLogRow';
 import { useKeyboardHeight } from '@/src/hooks/useKeyboardHeight';
@@ -194,74 +194,71 @@ export default function MealRunScreen() {
   );
 
   return (
-    <ScrollView
-      className="flex-1 bg-white dark:bg-black"
-      contentContainerClassName="p-4"
-      contentContainerStyle={{ paddingBottom: keyboardHeight + 12 }}
-      keyboardShouldPersistTaps="handled">
-      <View className="mb-4 flex-row items-center justify-between">
-        <View className="flex-1 pr-3">
-          <Text className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">
-            {detail.meal.name}
-          </Text>
-          <Text className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">{date}</Text>
-        </View>
-        <Pressable
-          onPress={toggleDone}
-          className="rounded-lg border border-neutral-300 px-3 py-2 dark:border-neutral-700">
-          <Text
-            className={`text-sm font-medium ${draft.done ? 'text-green-600' : 'text-neutral-500 dark:text-neutral-400'}`}>
-            {draft.done ? 'Concluído' : 'Marcar como feito'}
-          </Text>
-        </Pressable>
-      </View>
-
-      <View className="mb-4 rounded-xl border border-neutral-200 p-3 dark:border-neutral-800">
-        <Text className="text-sm text-neutral-500 dark:text-neutral-400">
-          Registro: {status ? MEAL_STATUS_LABELS[status] : '-'}
-        </Text>
-      </View>
-
-      {execution.items.length === 0 && execution.extras.length === 0 ? (
-        <Text className="mb-4 text-sm text-neutral-500 dark:text-neutral-400">
-          Essa refeição não tem ingrediente cadastrado.
-        </Text>
-      ) : (
-        execution.items.map((item) => (
-          <IngredientLogRow
-            key={item.key}
-            name={item.name}
-            unit={item.unit}
-            plannedQuantity={item.plannedQuantity}
-            eatenQuantity={draft.quantities[item.ingredientId] ?? ''}
-            onChange={(patch) =>
-              patch.quantity !== undefined && setQuantity(item.ingredientId, patch.quantity)
-            }
-          />
-        ))
-      )}
-
-      {execution.extras.map((extra) => renderExtra(extra.key))}
-      {extraKeys.map((key) => renderExtra(key))}
-
-      <Pressable onPress={addExtra} className="mb-4 mt-1 self-start py-2">
-        <Text className="text-sm font-semibold text-indigo-600 dark:text-indigo-400">
-          + Adicionar ingrediente extra
-        </Text>
-      </Pressable>
-
-      <TextField
-        value={draft.notes}
-        onChangeText={(text) =>
-          setDraft((current) => (current ? { ...current, notes: text } : current))
-        }
-        placeholder="Observações (opcional)"
-        className="mb-4"
+    <View className="flex-1 bg-white dark:bg-black">
+      <ScreenHeader
+        title={detail.meal.name}
+        subtitle={date}
+        onBack={() => router.back()}
+        actions={[
+          {
+            label: draft.done ? 'Concluído' : 'Marcar como feito',
+            onPress: toggleDone,
+            tone: draft.done ? 'positive' : 'default',
+          },
+          { label: 'Salvar', onPress: handleSave, loading: saving },
+        ]}
       />
 
-      {saveError ? <Text className="mb-3 text-center text-sm text-red-500">{saveError}</Text> : null}
+      <ScrollView
+        className="flex-1"
+        contentContainerClassName="p-4"
+        contentContainerStyle={{ paddingBottom: keyboardHeight + 12 }}
+        keyboardShouldPersistTaps="handled">
+        <View className="mb-4 rounded-xl border border-neutral-200 p-3 dark:border-neutral-800">
+          <Text className="text-sm text-neutral-500 dark:text-neutral-400">
+            Registro: {status ? MEAL_STATUS_LABELS[status] : '-'}
+          </Text>
+        </View>
 
-      <Button label="Salvar refeição" onPress={handleSave} loading={saving} />
-    </ScrollView>
+        {execution.items.length === 0 && execution.extras.length === 0 ? (
+          <Text className="mb-4 text-sm text-neutral-500 dark:text-neutral-400">
+            Essa refeição não tem ingrediente cadastrado.
+          </Text>
+        ) : (
+          execution.items.map((item) => (
+            <IngredientLogRow
+              key={item.key}
+              name={item.name}
+              unit={item.unit}
+              plannedQuantity={item.plannedQuantity}
+              eatenQuantity={draft.quantities[item.ingredientId] ?? ''}
+              onChange={(patch) =>
+                patch.quantity !== undefined && setQuantity(item.ingredientId, patch.quantity)
+              }
+            />
+          ))
+        )}
+
+        {execution.extras.map((extra) => renderExtra(extra.key))}
+        {extraKeys.map((key) => renderExtra(key))}
+
+        <Pressable onPress={addExtra} className="mb-4 mt-1 self-start py-2">
+          <Text className="text-sm font-semibold text-indigo-600 dark:text-indigo-400">
+            + Adicionar ingrediente extra
+          </Text>
+        </Pressable>
+
+        <TextField
+          value={draft.notes}
+          onChangeText={(text) =>
+            setDraft((current) => (current ? { ...current, notes: text } : current))
+          }
+          placeholder="Observações (opcional)"
+          className="mb-4"
+        />
+
+        {saveError ? <Text className="text-center text-sm text-red-500">{saveError}</Text> : null}
+      </ScrollView>
+    </View>
   );
 }

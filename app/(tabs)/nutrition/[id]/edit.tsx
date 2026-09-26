@@ -18,5 +18,12 @@ export default function EditMealScreen() {
     );
   }
 
-  return <MealForm initial={detail} onSaved={() => router.back()} />;
+  return (
+    <MealForm
+      initial={detail}
+      screenTitle="Editar refeição"
+      onSaved={() => router.back()}
+      onCancel={() => router.back()}
+    />
+  );
 }

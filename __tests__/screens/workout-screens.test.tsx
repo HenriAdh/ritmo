@@ -93,12 +93,14 @@ describe('telas de treino', () => {
     render(<WorkoutListScreen />);
 
     expect(await screen.findByText('Treino A')).toBeTruthy();
-    expect(screen.getByText('Novo treino')).toBeTruthy();
+    expect(screen.getByText('Treinos')).toBeTruthy();
+    expect(screen.getByText('Novo')).toBeTruthy();
   });
 
   it('renderiza o formulário de novo treino', () => {
     render(<NewWorkoutScreen />);
 
+    expect(screen.getByText('Novo treino')).toBeTruthy();
     expect(screen.getByText('Título')).toBeTruthy();
     expect(screen.getByText('+ Adicionar exercício')).toBeTruthy();
     expect(screen.getByText('Salvar')).toBeTruthy();
@@ -126,7 +128,7 @@ describe('telas de treino', () => {
     expect(await screen.findByText('Supino')).toBeTruthy();
     expect(screen.getByText('Marcar como feito')).toBeTruthy();
     expect(screen.getByText('+ Adicionar exercício extra')).toBeTruthy();
-    expect(screen.getByText('Salvar treino')).toBeTruthy();
+    expect(screen.getByText('Salvar')).toBeTruthy();
   });
 
   it('pede confirmação antes de excluir o treino', async () => {

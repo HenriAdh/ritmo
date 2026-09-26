@@ -1,7 +1,7 @@
 import { Link, useRouter } from 'expo-router';
 import { ActivityIndicator, FlatList, Pressable, Text, View } from 'react-native';
 
-import { Button } from '@/src/components/Button';
+import { ScreenHeader } from '@/src/components/ScreenHeader';
 import { useMeals } from '@/src/hooks/useMeals';
 import { useAuthStore } from '@/src/stores/auth-store';
 
@@ -16,6 +16,11 @@ export default function MealListScreen() {
 
   return (
     <View className="flex-1 bg-white dark:bg-black">
+      <ScreenHeader
+        title="Refeições"
+        actions={[{ label: 'Nova', onPress: () => router.push('/nutrition/new') }]}
+      />
+
       {error ? (
         <View className="flex-1 items-center justify-center px-6">
           <Text className="text-center text-sm text-red-500">{error}</Text>
@@ -50,9 +55,6 @@ export default function MealListScreen() {
           )}
         />
       )}
-      <View className="border-t border-neutral-200 p-4 dark:border-neutral-800">
-        <Button label="Nova refeição" onPress={() => router.push('/nutrition/new')} />
-      </View>
     </View>
   );
 }

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
-import { Button } from '@/src/components/Button';
+import { ScreenHeader } from '@/src/components/ScreenHeader';
 import { TextField } from '@/src/components/TextField';
 import { useKeyboardHeight } from '@/src/hooks/useKeyboardHeight';
 import {
@@ -21,11 +21,14 @@ type ExerciseRow = {
 type WorkoutFormProps = {
   initial?: WorkoutDetail;
   onSaved: () => void;
+  onCancel: () => void;
+  /** `screenTitle` e não `title` porque `title` já é o campo do formulário. */
+  screenTitle: string;
 };
 
 const EMPTY_EXERCISE: ExerciseRow = { name: '', plannedSets: '', plannedReps: '' };
 
-export function WorkoutForm({ initial, onSaved }: WorkoutFormProps) {
+export function WorkoutForm({ initial, onSaved, onCancel, screenTitle }: WorkoutFormProps) {
   const user = useAuthStore((state) => state.user);
   const [title, setTitle] = useState(initial?.workout.title ?? '');
   const [rows, setRows] = useState<ExerciseRow[]>(
@@ -92,69 +95,75 @@ export function WorkoutForm({ initial, onSaved }: WorkoutFormProps) {
   };
 
   return (
-    <ScrollView
-      className="flex-1 bg-white dark:bg-black"
-      contentContainerClassName="p-4"
-      contentContainerStyle={{ paddingBottom: keyboardHeight + 12 }}
-      keyboardShouldPersistTaps="handled">
-      <Text className="mb-2 text-sm font-medium text-neutral-500 dark:text-neutral-400">
-        Título
-      </Text>
-      <TextField
-        value={title}
-        onChangeText={setTitle}
-        placeholder="Ex.: Treino A - Peito e tríceps"
-        className="mb-6"
+    <View className="flex-1 bg-white dark:bg-black">
+      <ScreenHeader
+        title={screenTitle}
+        onBack={onCancel}
+        actions={[{ label: 'Salvar', onPress: handleSave, loading: saving }]}
       />
 
-      <Text className="mb-2 text-sm font-medium text-neutral-500 dark:text-neutral-400">
-        Exercícios
-      </Text>
-      {rows.map((row, index) => (
-        <View
-          key={index}
-          className="mb-3 rounded-xl border border-neutral-200 p-3 dark:border-neutral-800">
-          <TextField
-            value={row.name}
-            onChangeText={(text) => updateRow(index, { name: text })}
-            placeholder="Nome do exercício"
-            className="mb-3"
-          />
-          <View className="flex-row gap-3">
-            <TextField
-              value={row.plannedSets}
-              onChangeText={(text) => updateRow(index, { plannedSets: text })}
-              placeholder="Séries"
-              keyboardType="number-pad"
-              className="flex-1"
-            />
-            <TextField
-              value={row.plannedReps}
-              onChangeText={(text) => updateRow(index, { plannedReps: text })}
-              placeholder="Repetições"
-              keyboardType="number-pad"
-              className="flex-1"
-            />
-          </View>
-          {rows.length > 1 ? (
-            <Pressable onPress={() => removeExercise(index)} className="mt-2 self-start">
-              <Text className="text-sm text-red-500">Remover</Text>
-            </Pressable>
-          ) : null}
-        </View>
-      ))}
-
-      <Pressable
-        onPress={addExercise}
-        className="mb-6 rounded-xl border border-dashed border-neutral-300 p-3 dark:border-neutral-700">
-        <Text className="text-center text-sm font-medium text-neutral-500 dark:text-neutral-400">
-          + Adicionar exercício
+      <ScrollView
+        className="flex-1"
+        contentContainerClassName="p-4"
+        contentContainerStyle={{ paddingBottom: keyboardHeight + 12 }}
+        keyboardShouldPersistTaps="handled">
+        <Text className="mb-2 text-sm font-medium text-neutral-500 dark:text-neutral-400">
+          Título
         </Text>
-      </Pressable>
+        <TextField
+          value={title}
+          onChangeText={setTitle}
+          placeholder="Ex.: Treino A - Peito e tríceps"
+          className="mb-6"
+        />
 
-      {error ? <Text className="mb-4 text-center text-sm text-red-500">{error}</Text> : null}
+        <Text className="mb-2 text-sm font-medium text-neutral-500 dark:text-neutral-400">
+          Exercícios
+        </Text>
+        {rows.map((row, index) => (
+          <View
+            key={index}
+            className="mb-3 rounded-xl border border-neutral-200 p-3 dark:border-neutral-800">
+            <TextField
+              value={row.name}
+              onChangeText={(text) => updateRow(index, { name: text })}
+              placeholder="Nome do exercício"
+              className="mb-3"
+            />
+            <View className="flex-row gap-3">
+              <TextField
+                value={row.plannedSets}
+                onChangeText={(text) => updateRow(index, { plannedSets: text })}
+                placeholder="Séries"
+                keyboardType="number-pad"
+                className="flex-1"
+              />
+              <TextField
+                value={row.plannedReps}
+                onChangeText={(text) => updateRow(index, { plannedReps: text })}
+                placeholder="Repetições"
+                keyboardType="number-pad"
+                className="flex-1"
+              />
+            </View>
+            {rows.length > 1 ? (
+              <Pressable onPress={() => removeExercise(index)} className="mt-2 self-start">
+                <Text className="text-sm text-red-500">Remover</Text>
+              </Pressable>
+            ) : null}
+          </View>
+        ))}
 
-      <Button label="Salvar" onPress={handleSave} loading={saving} />
-    </ScrollView>
+        <Pressable
+          onPress={addExercise}
+          className="mb-6 rounded-xl border border-dashed border-neutral-300 p-3 dark:border-neutral-700">
+          <Text className="text-center text-sm font-medium text-neutral-500 dark:text-neutral-400">
+            + Adicionar exercício
+          </Text>
+        </Pressable>
+
+        {error ? <Text className="mb-4 text-center text-sm text-red-500">{error}</Text> : null}
+      </ScrollView>
+    </View>
   );
 }

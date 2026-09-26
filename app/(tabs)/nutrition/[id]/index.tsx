@@ -2,6 +2,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ActivityIndicator, Alert, Text, View } from 'react-native';
 
 import { Button } from '@/src/components/Button';
+import { ScreenHeader } from '@/src/components/ScreenHeader';
 import { useMeal } from '@/src/hooks/useMeal';
 import { deleteMeal } from '@/src/services/meals';
 import { weekdayName } from '@/src/utils/weekday';
@@ -43,20 +44,25 @@ export default function MealDetailScreen() {
         </View>
       ) : (
         <View className="flex-1">
-          <View className="p-4">
-            <Text className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">
-              {detail.meal.name}
-            </Text>
-            <Text className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
-              {weekdays.length === 0
+          <ScreenHeader
+            title={detail.meal.name}
+            subtitle={
+              weekdays.length === 0
                 ? 'Nenhum dia vinculado'
                 : `Planejada em ${weekdays
                     .slice()
                     .sort((a, b) => a.weekday - b.weekday)
                     .map((day) => weekdayName(day.weekday))
-                    .join(', ')}`}
-            </Text>
-          </View>
+                    .join(', ')}`
+            }
+            onBack={() => router.back()}
+            actions={[
+              {
+                label: 'Editar',
+                onPress: () => router.push({ pathname: '/nutrition/[id]/edit', params: { id } }),
+              },
+            ]}
+          />
 
           <View className="px-4">
             <Text className="mb-2 text-sm font-semibold text-neutral-900 dark:text-neutral-100">
@@ -88,16 +94,9 @@ export default function MealDetailScreen() {
             <Button
               label="Registrar refeição"
               onPress={() => router.push({ pathname: '/nutrition/[id]/run', params: { id } })}
-              className="mb-3"
-            />
-            <Button
-              label="Editar"
-              onPress={() => router.push({ pathname: '/nutrition/[id]/edit', params: { id } })}
               className="mb-4"
             />
-            <View className="border-t border-neutral-100 pt-4 dark:border-neutral-900">
-              <Button label="Excluir refeição" variant="danger" onPress={confirmDelete} />
-            </View>
+            <Button label="Excluir refeição" variant="danger" onPress={confirmDelete} />
           </View>
         </View>
       )}

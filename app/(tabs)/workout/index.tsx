@@ -1,7 +1,7 @@
 import { Link, useRouter } from 'expo-router';
 import { ActivityIndicator, FlatList, Pressable, Text, View } from 'react-native';
 
-import { Button } from '@/src/components/Button';
+import { ScreenHeader } from '@/src/components/ScreenHeader';
 import { useAuthStore } from '@/src/stores/auth-store';
 import { useWorkouts } from '@/src/hooks/useWorkouts';
 
@@ -16,6 +16,11 @@ export default function WorkoutListScreen() {
 
   return (
     <View className="flex-1 bg-white dark:bg-black">
+      <ScreenHeader
+        title="Treinos"
+        actions={[{ label: 'Novo', onPress: () => router.push('/workout/new') }]}
+      />
+
       {error ? (
         <View className="flex-1 items-center justify-center px-6">
           <Text className="text-center text-sm text-red-500">{error}</Text>
@@ -50,9 +55,6 @@ export default function WorkoutListScreen() {
           )}
         />
       )}
-      <View className="border-t border-neutral-200 p-4 dark:border-neutral-800">
-        <Button label="Novo treino" onPress={() => router.push('/workout/new')} />
-      </View>
     </View>
   );
 }

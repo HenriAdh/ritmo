@@ -18,15 +18,20 @@ O app é **local-first**: sem backend, sem servidor de notificações. Tudo fica
 | **Compras** | ⬜ placeholder | ⬜ placeholder | ⬜ placeholder | 1 (fumaça) |
 | **Cozinha** | ⬜ placeholder | ⬜ placeholder | ⬜ placeholder | 1 (fumaça) |
 | **Home** (resumo do dia) | ✅ completo | ✅ completo | — | 9 |
-| **Peso corporal** | ⬜ tabela criada, sem uso | — | — | — |
+| **Progresso** (peso + fotos) | ✅ completo | — | ✅ registro do dia | 50 |
+| **Cabeçalho** (padrão de tela) | — | — | — | 8 |
 | **Notificações** | ⬜ dependência instalada, sem uso | — | — | — |
 | **Métricas** | ⬜ não iniciado | — | — | — |
 
-Mais 16 testes de utils puras e da tela de planejamento. Total: **142** em 19 suítes.
+Mais 16 testes de utils puras e da tela de planejamento. Total: **200** em 24 suítes.
 
 Treino e Alimentação estão completos de ponta a ponta: cadastro → planejamento por dia da semana com horário → checklist de execução com quantidades, itens extras e observações.
 
-A Home resume o dia: agenda de treino e alimentação ordenada por horário, estado de cada item (pendente, concluído, parcial, ignorado) e atalho para a execução da próxima atividade pendente. As métricas ainda não existem.
+Toda tela usa o mesmo cabeçalho, `src/components/ScreenHeader.tsx`, em vez do header nativo do React Navigation (que está desligado com `headerShown: false` em todos os `_layout.tsx`). O padrão é título grande sem borda, subtítulo opcional, chevron de voltar à esquerda quando a tela é empilhada, e ações textuais à direita — `Novo`, `Editar`, `Salvar`, `Registrar` — com `loading` virando spinner e `tone` para `positive`/`danger`. O slot `right` recebe conteúdo solto quando a tela precisa de um contador (`2/5`) ao lado das ações. Os botões inferiores de salvar saíram dos formulários e das telas de execução. Login e registro são a exceção de propósito: são telas de entrada, com a marca centralizada e sem header, porque um título de navegação e um voltar não fazem sentido nelas.
+
+A Home resume o dia: agenda de treino e alimentação ordenada por horário, estado de cada item (pendente, concluído, parcial, ignorado) e atalho para a execução da próxima atividade pendente.
+
+Progresso é uma rota fora das abas, aberta pelo botão no cabeçalho da Home: registra o peso do dia (aceita `82,4` e `82.4`), anexa opcionalmente uma foto da galeria, mostra o gráfico de evolução e a timeline de fotos. A foto é guardada como referência (`photo_uri`), não copiada para o app — se for apagada da galeria, o lugar dela vira "Foto indisponível". As métricas ainda não existem.
 
 Compras e Cozinha são telas de 10 linhas que renderizam `ModulePlaceholder`. As tabelas `grocery_items` e `cooking_items` já existem no schema, mas nenhuma tela as consome ainda.
 
@@ -73,7 +78,7 @@ O banco é criado automaticamente no primeiro start, em `ritmo.db`, junto com as
 ### Verificação de qualidade
 
 ```bash
-npm test                # 19 suítes, 142 testes, ~6s
+npm test                # 24 suítes, 200 testes, ~7s
 npm run lint            # expo lint (eslint-config-expo)
 npx tsc --noEmit        # typecheck
 ```
@@ -112,7 +117,7 @@ app/                        rotas do Expo Router — cada arquivo é uma tela
     cooking.tsx             placeholder
     index.tsx               Home: resumo do dia e próxima atividade
 src/
-  components/               UI reutilizável (Button, TextField, formulários, linhas de log)
+  components/               UI reutilizável (ScreenHeader, Button, TextField, formulários, linhas de log)
   components/home/         card de próxima atividade e linha do resumo do dia
   db/
     schema.ts               14 tabelas em Drizzle
@@ -124,7 +129,7 @@ src/
   stores/                   Zustand (auth persistido)
   utils/                    funções puras (datas, quantidades, agenda, dias da semana)
   types/                    tipos derivados do schema
-__tests__/                  services/ (regra de negócio), screens/ (fumaça + interação), utils/
+__tests__/                  components/ (ScreenHeader), services/ (regra de negócio), screens/ (fumaça + interação), utils/
 ```
 
 ### Camadas
@@ -159,8 +164,21 @@ Os hooks de dados seguem um contrato único: retornam `{ dado, error, refresh }`
 | `/nutrition/new`, `/nutrition/[id]/edit` | Formulário | Mesmo `MealForm`, criando ou editando |
 | `/nutrition/[id]` | Refeição | Detalhe, dias vinculados, registrar / editar / excluir |
 | `/nutrition/[id]/run` | Registrar refeição | Checklist do dia: concluído, quanto comeu de cada ingrediente, ingrediente extra, observações |
+| `/progress` | Progresso | Peso do dia com foto opcional da galeria, gráfico de evolução e timeline de fotos |
 | `/shopping` | Compras | Placeholder |
 | `/cooking` | Cozinha | Placeholder |
+
+### Progresso
+
+Fora das abas de propósito: o cabeçalho da Home tem o botão que abre `/progress`, e assim a tab bar continua com as seis áreas principais em vez de ganhar uma sétima.
+
+Três decisões que valem registro:
+
+- **Uma pesagem por dia.** `saveWeighIn()` atualiza o registro do dia se ele já existe, em vez de inserir outro. Pesar duas vezes no mesmo dia someira a primeira das duas.
+- **A foto é referência, não cópia.** `photo_uri` guarda a URI do asset da galeria, então nada é gravado no app. O custo disso é conocido: apagar a foto na galeria quebra o link, e a `PhotoTimeline` troca a imagem por "Foto indisponível" quando o `Image` falha.
+- **O eixo horizontal usa a data, não o índice.** `buildWeightChart()` posiciona por tempo decorrido, então um mês com duas pesagens e o seguinte com uma não ocupam o mesmo espaço.
+
+O gráfico é `react-native-svg` puro, sem biblioteca de charts. A geometria mora em `src/utils/weight-chart.ts` como função determinística, testada sem renderizar nada.
 
 ### Execução de refeição
 
@@ -226,13 +244,13 @@ npm test
 npx jest --maxWorkers=1    # evita flake de I/O em suítes de tela
 ```
 
-19 suítes, 142 testes, organizados por camada:
+23 suítes, 192 testes, organizados por camada:
 
 | Pasta | Foco |
 | --- | --- |
 | `__tests__/services/` | Toda função pública de todo service, com o banco mockado via `src/db/__mocks__/client.ts` |
 | `__tests__/screens/` | Fumaça e interação de cada tela, com `expo-router` mockado por suíte |
-| `__tests__/utils/` | Funções puras: agenda do dia, resumo do dia, dia da semana, datas, quantidade |
+| `__tests__/utils/` | Funções puras: agenda do dia, resumo do dia, dia da semana, datas, quantidade, peso e geometria do gráfico |
 
 Nenhum teste toca SQLite de verdade. O mock do drizzle é determinístico, com fila de resultados por query, o que permite verificar transações e valores gravados:
 
@@ -267,10 +285,9 @@ Próximos passos, em ordem de dependência:
 
 1. **Compras** — lista derivada dos ingredientes da semana (`grocery_items` já existe).
 2. **Cozinha** — o que cozinhar, quando e a antecedência (`cooking_items` já existe).
-3. **Notificações** — `expo-notifications` está instalado, mas nunca importado, e falta o plugin em `app.json`. Vai ser um motor que lê os horários das tabelas, não uma tela.
-4. **Peso corporal** — `weigh_ins` existe; falta tela e o gráfico de evolução.
-5. **Métricas** na Home — adesão ao treino, adesão à dieta, evolução de carga e de peso.
-6. **Sair da conta** — `signOut` existe no store, mas nenhuma tela chama.
+3. **Notificações** — `expo-notifications` está instalado, mas nunca importado, e falta o plugin em `app.json`. Vai ser um motor que lê os horários das tabelas, não uma tela. A periodicidade de pesagem em `settings.weigh_in_interval_days` já é campo previsto para ele.
+4. **Métricas** na Home — adesão ao treino, adesão à dieta, evolução de carga.
+5. **Sair da conta** — `signOut` existe no store, mas nenhuma tela chama.
 
 Pendências técnicas conhecidas:
 
@@ -280,6 +297,8 @@ Pendências técnicas conhecidas:
 - `listWorkouts` e `listMeals` contam exercícios/ingredientes buscando todas as linhas sem filtro e filtram em memória.
 - `MigrationGate` não tem botão de tentar novamente em caso de erro.
 - `expo-asset` está aninhado em `node_modules/expo/node_modules` e não resolve fora do Metro; `expo-font` (usado por `@expo/vector-icons`, importado no layout das abas) depende dele. Rodar `npx expo install expo-asset` deixa a resolução explícita.
+- `npm install` local falha com `EALLOWSCRIPTS`: o `allow-scripts=opencode-ai` do `.npmrc` do usuário é rejeitado em instalação de projeto pelo npm 12. Instalar com `npm install <pkg>` direto contorna, mas `npx expo install` não passa.
+- `expo`, `expo-constants` e `jest-expo` estão um patch atrás do que `expo install --check` espera.
 
 ---
 

@@ -2,7 +2,7 @@ import { Stack } from 'expo-router';
 
 export default function WorkoutLayout() {
   return (
-    <Stack>
+    <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="index" options={{ title: 'Treinos' }} />
       <Stack.Screen name="new" options={{ title: 'Novo treino' }} />
       <Stack.Screen name="[id]/index" options={{ title: 'Treino' }} />

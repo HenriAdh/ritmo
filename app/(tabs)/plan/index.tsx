@@ -2,6 +2,7 @@ import { useRouter } from 'expo-router';
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
 
 import { DayAgendaRow } from '@/src/components/plan/DayAgendaRow';
+import { ScreenHeader } from '@/src/components/ScreenHeader';
 import { useAuthStore } from '@/src/stores/auth-store';
 import { useMealPlan } from '@/src/hooks/useMealPlan';
 import { useWorkoutPlan } from '@/src/hooks/useWorkoutPlan';
@@ -40,48 +41,44 @@ export default function PlanScreen() {
   }
 
   return (
-    <ScrollView
-      className="flex-1 bg-white dark:bg-black"
-      contentContainerClassName="p-4">
-      <View className="mb-4">
-        <Text className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">
-          Planejamento da semana
-        </Text>
-        <Text className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
-          Organize seu dia por treino, alimentação, cozinha e compras.
-        </Text>
-      </View>
+    <View className="flex-1 bg-white dark:bg-black">
+      <ScreenHeader
+        title="Planejar"
+        subtitle="Organize seu dia por treino, alimentação, cozinha e compras."
+      />
 
-      {WEEKDAY_NAMES.map((dayName, index) => {
-        const weekday = index;
-        const workoutEntries = workoutWeekdays[weekday] ?? [];
-        const mealEntries = mealWeekdays[weekday] ?? [];
-        const total = workoutEntries.length + mealEntries.length;
-        return (
-          <Pressable
-            key={weekday}
-            onPress={() =>
-              router.push({ pathname: '/plan/[weekday]', params: { weekday: String(weekday) } })
-            }
-            className="mb-3 rounded-xl border border-neutral-200 p-3 dark:border-neutral-800">
-            <View className="flex-row items-center justify-between">
-              <Text className="text-base font-semibold text-neutral-900 dark:text-neutral-100">
-                {dayName}
-              </Text>
-              <Text className="text-sm text-neutral-500 dark:text-neutral-400">
-                {itemLabel(total)}
-              </Text>
-            </View>
-            {total > 0 ? (
-              <View className="mt-2">
-                {buildDayAgenda(workoutEntries, mealEntries).map((item) => (
-                  <DayAgendaRow key={item.key} item={item} />
-                ))}
+      <ScrollView className="flex-1" contentContainerClassName="p-4">
+        {WEEKDAY_NAMES.map((dayName, index) => {
+          const weekday = index;
+          const workoutEntries = workoutWeekdays[weekday] ?? [];
+          const mealEntries = mealWeekdays[weekday] ?? [];
+          const total = workoutEntries.length + mealEntries.length;
+          return (
+            <Pressable
+              key={weekday}
+              onPress={() =>
+                router.push({ pathname: '/plan/[weekday]', params: { weekday: String(weekday) } })
+              }
+              className="mb-3 rounded-xl border border-neutral-200 p-3 dark:border-neutral-800">
+              <View className="flex-row items-center justify-between">
+                <Text className="text-base font-semibold text-neutral-900 dark:text-neutral-100">
+                  {dayName}
+                </Text>
+                <Text className="text-sm text-neutral-500 dark:text-neutral-400">
+                  {itemLabel(total)}
+                </Text>
               </View>
-            ) : null}
-          </Pressable>
-        );
-      })}
-    </ScrollView>
+              {total > 0 ? (
+                <View className="mt-2">
+                  {buildDayAgenda(workoutEntries, mealEntries).map((item) => (
+                    <DayAgendaRow key={item.key} item={item} />
+                  ))}
+                </View>
+              ) : null}
+            </Pressable>
+          );
+        })}
+      </ScrollView>
+    </View>
   );
 }

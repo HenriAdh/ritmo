@@ -2,7 +2,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
 
-import { Button } from '@/src/components/Button';
+import { ScreenHeader } from '@/src/components/ScreenHeader';
 import { ExerciseLogRow } from '@/src/components/workout/ExerciseLogRow';
 import { useKeyboardHeight } from '@/src/hooks/useKeyboardHeight';
 import { useWorkout } from '@/src/hooks/useWorkout';
@@ -193,54 +193,54 @@ export default function WorkoutRunScreen() {
   ).length;
 
   return (
-    <ScrollView
-      className="flex-1 bg-white dark:bg-black"
-      contentContainerClassName="p-4"
-      contentContainerStyle={{ paddingBottom: keyboardHeight + 12 }}
-      keyboardShouldPersistTaps="handled">
-      <View className="mb-4 flex-row items-center justify-between">
-        <View className="flex-1 pr-3">
-          <Text className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">
-            {detail.workout.title}
+    <View className="flex-1 bg-white dark:bg-black">
+      <ScreenHeader
+        title={detail.workout.title}
+        subtitle={date}
+        onBack={() => router.back()}
+        actions={[{ label: 'Salvar', onPress: handleSave, loading: saving }]}
+        right={
+          <Text className="text-sm font-semibold text-neutral-500 dark:text-neutral-400">
+            {doneCount}/{items.length + extraKeys.length}
           </Text>
-          <Text className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">{date}</Text>
-        </View>
-        <Text className="text-sm font-semibold text-neutral-500 dark:text-neutral-400">
-          {doneCount}/{items.length + extraKeys.length}
-        </Text>
-      </View>
+        }
+      />
 
-      {items.map(renderItem)}
-      {extraKeys.map((key) => {
-        const draft = drafts[key] ?? EMPTY_DRAFT;
-        return (
-          <ExerciseLogRow
-            key={key}
-            name=""
-            editedName={draft.name ?? ''}
-            isExtra
-            plannedSets={null}
-            plannedReps={null}
-            done={draft.done}
-            weightUsed={draft.weightUsed}
-            actualReps={draft.actualReps}
-            notes={draft.notes}
-            onChange={(patch) => patchDraft(key, patch)}
-            onToggleDone={() => patchDraft(key, { done: !draft.done })}
-            onRemove={() => removeExtra(key)}
-          />
-        );
-      })}
+      <ScrollView
+        className="flex-1"
+        contentContainerClassName="p-4"
+        contentContainerStyle={{ paddingBottom: keyboardHeight + 12 }}
+        keyboardShouldPersistTaps="handled">
+        {items.map(renderItem)}
+        {extraKeys.map((key) => {
+          const draft = drafts[key] ?? EMPTY_DRAFT;
+          return (
+            <ExerciseLogRow
+              key={key}
+              name=""
+              editedName={draft.name ?? ''}
+              isExtra
+              plannedSets={null}
+              plannedReps={null}
+              done={draft.done}
+              weightUsed={draft.weightUsed}
+              actualReps={draft.actualReps}
+              notes={draft.notes}
+              onChange={(patch) => patchDraft(key, patch)}
+              onToggleDone={() => patchDraft(key, { done: !draft.done })}
+              onRemove={() => removeExtra(key)}
+            />
+          );
+        })}
 
-      <Pressable onPress={addExtra} className="mt-1 self-start py-2">
-        <Text className="text-sm font-semibold text-indigo-600 dark:text-indigo-400">
-          + Adicionar exercício extra
-        </Text>
-      </Pressable>
+        <Pressable onPress={addExtra} className="mt-1 self-start py-2">
+          <Text className="text-sm font-semibold text-indigo-600 dark:text-indigo-400">
+            + Adicionar exercício extra
+          </Text>
+        </Pressable>
 
-      {saveError ? <Text className="mb-3 text-center text-sm text-red-500">{saveError}</Text> : null}
-
-      <Button label="Salvar treino" onPress={handleSave} loading={saving} className="mt-2" />
-    </ScrollView>
+        {saveError ? <Text className="text-center text-sm text-red-500">{saveError}</Text> : null}
+      </ScrollView>
+    </View>
   );
 }
