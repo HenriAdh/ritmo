@@ -23,7 +23,7 @@ export default function MealListScreen() {
 
       {error ? (
         <View className="flex-1 items-center justify-center px-6">
-          <Text className="text-center text-sm text-red-500">{error}</Text>
+          <Text className="text-center text-sm text-danger-500">{error}</Text>
         </View>
       ) : meals === null ? (
         <View className="flex-1 items-center justify-center">

@@ -199,7 +199,7 @@ export default function PlanWeekdayScreen() {
                       <View
                         className={`h-6 w-6 items-center justify-center rounded-md border ${
                           row.checked
-                            ? 'border-indigo-600 bg-indigo-600'
+                            ? 'border-primary-600 bg-primary-600'
                             : 'border-neutral-300 dark:border-neutral-700'
                         }`}>
                         {row.checked ? <Text className="text-sm text-white">✓</Text> : null}
@@ -221,7 +221,7 @@ export default function PlanWeekdayScreen() {
           );
         })}
 
-        {error ? <Text className="text-center text-sm text-red-500">{error}</Text> : null}
+        {error ? <Text className="text-center text-sm text-danger-500">{error}</Text> : null}
       </ScrollView>
     </View>
   );

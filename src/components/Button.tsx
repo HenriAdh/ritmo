@@ -1,6 +1,8 @@
 import { useColorScheme } from 'nativewind';
 import { ActivityIndicator, Pressable, Text, type PressableProps } from 'react-native';
 
+import { ink, shade } from '@/src/theme/colors';
+
 type ButtonVariant = 'primary' | 'danger';
 
 type ButtonProps = {
@@ -12,14 +14,17 @@ type ButtonProps = {
 
 const variantStyles: Record<ButtonVariant, { root: string; label: string; spinner: string }> = {
   primary: {
-    root: 'bg-neutral-900 active:bg-neutral-800 dark:bg-neutral-100 dark:active:bg-neutral-200',
-    label: 'text-white dark:text-black',
+    // Branco sobre primary-600 da 5.70:1 e sobre primary-700 da 7.10:1, ambos
+    // acima de 4.5:1. No escuro o 600 se mantem porque primary-500 com texto
+    // branco cai para 4.23:1 e reprova em texto normal.
+    root: 'bg-primary-600 active:bg-primary-700 dark:bg-primary-600 dark:active:bg-primary-500',
+    label: 'text-white',
     spinner: '',
   },
   danger: {
-    root: 'border border-red-300 active:bg-red-50 dark:border-red-900 dark:active:bg-red-950',
-    label: 'text-red-600 dark:text-red-500',
-    spinner: 'text-red-600 dark:text-red-500',
+    root: 'border border-danger-300 active:bg-danger-50 dark:border-danger-900 dark:active:bg-danger-950',
+    label: 'text-danger-600 dark:text-danger-500',
+    spinner: 'text-danger-600 dark:text-danger-500',
   },
 };
 
@@ -35,7 +40,7 @@ export function Button({
   const isDark = colorScheme === 'dark';
   const style = variantStyles[variant];
   const spinnerColor =
-    variant === 'danger' ? (isDark ? '#ef4444' : '#dc2626') : isDark ? '#171717' : '#fafafa';
+    variant === 'danger' ? shade('danger', isDark ? 500 : 600) : ink('onAccent', isDark);
 
   return (
     <Pressable

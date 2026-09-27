@@ -11,8 +11,8 @@ import { useAuthStore } from '@/src/stores/auth-store';
 import { formatWeight, formatWeightDelta, weightTrend } from '@/src/utils/weight';
 
 const trendColors = {
-  up: 'text-red-600 dark:text-red-500',
-  down: 'text-emerald-600 dark:text-emerald-500',
+  up: 'text-danger-600 dark:text-danger-500',
+  down: 'text-success-600 dark:text-success-500',
   stable: 'text-neutral-500 dark:text-neutral-400',
 };
 
@@ -25,7 +25,7 @@ export default function ProgressScreen() {
   if (error && !weighIns) {
     return (
       <View className="flex-1 items-center justify-center bg-white px-6 dark:bg-black">
-        <Text className="text-center text-sm text-red-500">{error}</Text>
+        <Text className="text-center text-sm text-danger-500">{error}</Text>
       </View>
     );
   }
@@ -55,7 +55,7 @@ export default function ProgressScreen() {
         contentContainerStyle={{ paddingBottom: insets.bottom + 32 }}>
         <View className="rounded-2xl border border-neutral-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900">
         <WeighInForm today={today} saving={saving} onSubmit={save} />
-        {error ? <Text className="mt-2 text-sm text-red-600 dark:text-red-500">{error}</Text> : null}
+        {error ? <Text className="mt-2 text-sm text-danger-600 dark:text-danger-500">{error}</Text> : null}
       </View>
 
       {current && trend ? (

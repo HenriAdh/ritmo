@@ -8,8 +8,8 @@ import {
 } from '@/src/utils/day-summary';
 
 const BADGE_CLASS: Record<DaySummaryItem['kind'], string> = {
-  workout: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300',
-  meal: 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-300',
+  workout: 'bg-primary-100 text-primary-700 dark:bg-primary-900 dark:text-primary-300',
+  meal: 'bg-warning-100 text-warning-800 dark:bg-warning-900 dark:text-warning-300',
 };
 
 type StatusBadge = { glyph: string; root: string };
@@ -19,7 +19,7 @@ type StatusBadge = { glyph: string; root: string };
 const STATUS_BADGE: Record<DayItemStatus, StatusBadge> = {
   pending: { glyph: '', root: 'border-neutral-300 dark:border-neutral-700' },
   done: { glyph: '✓', root: 'border-transparent bg-neutral-900 dark:bg-neutral-100' },
-  partial: { glyph: '–', root: 'border-transparent bg-amber-500' },
+  partial: { glyph: '–', root: 'border-transparent bg-warning-500' },
   skipped: { glyph: '✕', root: 'border-neutral-300 dark:border-neutral-700' },
 };
 

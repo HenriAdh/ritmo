@@ -166,7 +166,7 @@ export default function MealRunScreen() {
   if (error) {
     return (
       <View className="flex-1 items-center justify-center bg-white px-6 dark:bg-black">
-        <Text className="text-center text-sm text-red-500">{error}</Text>
+        <Text className="text-center text-sm text-danger-500">{error}</Text>
       </View>
     );
   }
@@ -243,7 +243,7 @@ export default function MealRunScreen() {
         {extraKeys.map((key) => renderExtra(key))}
 
         <Pressable onPress={addExtra} className="mb-4 mt-1 self-start py-2">
-          <Text className="text-sm font-semibold text-indigo-600 dark:text-indigo-400">
+          <Text className="text-sm font-semibold text-primary-600 dark:text-primary-400">
             + Adicionar ingrediente extra
           </Text>
         </Pressable>
@@ -257,7 +257,7 @@ export default function MealRunScreen() {
           className="mb-4"
         />
 
-        {saveError ? <Text className="text-center text-sm text-red-500">{saveError}</Text> : null}
+        {saveError ? <Text className="text-center text-sm text-danger-500">{saveError}</Text> : null}
       </ScrollView>
     </View>
   );

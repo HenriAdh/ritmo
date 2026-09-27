@@ -3,6 +3,7 @@ import { useMemo, useState } from 'react';
 import { Text, View, type LayoutChangeEvent } from 'react-native';
 import Svg, { Circle, Defs, LinearGradient, Path, Stop } from 'react-native-svg';
 
+import { ink } from '@/src/theme/colors';
 import type { WeighIn } from '@/src/types';
 import { formatShortDate } from '@/src/utils/date';
 import { formatWeight } from '@/src/utils/weight';
@@ -16,6 +17,7 @@ type WeightChartProps = {
 
 export function WeightChart({ weighIns }: WeightChartProps) {
   const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === 'dark';
   const [width, setWidth] = useState(0);
 
   const chart = useMemo(
@@ -38,10 +40,11 @@ export function WeightChart({ weighIns }: WeightChartProps) {
     );
   }
 
-  const stroke = colorScheme === 'dark' ? '#fafafa' : '#171717';
-  const grid = colorScheme === 'dark' ? '#404040' : '#d4d4d4';
-  const areaFrom = colorScheme === 'dark' ? '#737373' : '#a3a3a3';
-  const areaTo = colorScheme === 'dark' ? '#171717' : '#ffffff';
+  // Props de svg nao aceitam className, entao as cores saem do token de ink.
+  const stroke = ink('strong', isDark);
+  const grid = ink('faint', isDark);
+  const areaFrom = ink('muted', isDark);
+  const areaTo = ink('inverse', isDark);
 
   return (
     <View onLayout={onLayout}>

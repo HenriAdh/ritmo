@@ -1,6 +1,8 @@
+import { useColorScheme } from 'nativewind';
 import { Pressable, Text, TextInput, View } from 'react-native';
 
 import { TextField } from '@/src/components/TextField';
+import { ink } from '@/src/theme/colors';
 
 type DraftPatch = {
   name?: string;
@@ -28,6 +30,8 @@ export function IngredientLogRow({
   onChange,
   onRemove,
 }: IngredientLogRowProps) {
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === 'dark';
   const plannedText =
     plannedQuantity === null && !unit
       ? 'Planejado: -'
@@ -42,7 +46,7 @@ export function IngredientLogRow({
             value={editedName}
             onChangeText={(text) => onChange({ name: text })}
             placeholder="Nome do ingrediente extra"
-            placeholderTextColor="#a1a1aa"
+            placeholderTextColor={ink('muted', isDark)}
             className="rounded-lg border border-neutral-300 px-3 py-2 text-base text-neutral-900 dark:border-neutral-700 dark:text-neutral-100"
           />
         ) : (
@@ -64,7 +68,7 @@ export function IngredientLogRow({
 
       {isExtra && onRemove ? (
         <Pressable onPress={onRemove} className="mt-3 self-start">
-          <Text className="text-sm font-medium text-red-500">Remover</Text>
+          <Text className="text-sm font-medium text-danger-500">Remover</Text>
         </Pressable>
       ) : null}
     </View>

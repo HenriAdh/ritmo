@@ -14,7 +14,7 @@ export function MigrationGate({ children }: MigrationGateProps) {
   if (error) {
     return (
       <View className="flex-1 items-center justify-center p-4">
-        <Text className="text-center text-sm text-red-500">
+        <Text className="text-center text-sm text-danger-500">
           Erro ao aplicar migrações: {error.message}
         </Text>
       </View>

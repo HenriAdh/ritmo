@@ -49,7 +49,7 @@ export default function LoginScreen() {
         className="mb-4"
       />
 
-      {error ? <Text className="mb-3 text-center text-sm text-red-500">{error}</Text> : null}
+      {error ? <Text className="mb-3 text-center text-sm text-danger-500">{error}</Text> : null}
 
       <Button label="Entrar" onPress={handleLogin} loading={submitting} />
 

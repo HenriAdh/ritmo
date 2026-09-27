@@ -27,7 +27,7 @@ export default function PlanScreen() {
   if (error) {
     return (
       <View className="flex-1 items-center justify-center bg-white px-6 dark:bg-black">
-        <Text className="text-center text-sm text-red-500">{error}</Text>
+        <Text className="text-center text-sm text-danger-500">{error}</Text>
       </View>
     );
   }

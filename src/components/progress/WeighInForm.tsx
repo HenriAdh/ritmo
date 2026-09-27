@@ -87,7 +87,7 @@ export function WeighInForm({ today, saving, onSubmit }: WeighInFormProps) {
       </Pressable>
 
       {error ? (
-        <Text className="text-sm text-red-600 dark:text-red-500">{error}</Text>
+        <Text className="text-sm text-danger-600 dark:text-danger-500">{error}</Text>
       ) : null}
 
       <Button label={today ? 'Atualizar peso' : 'Salvar peso'} loading={saving} onPress={submit} />

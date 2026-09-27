@@ -23,7 +23,7 @@ O app é **local-first**: sem backend, sem servidor de notificações. Tudo fica
 | **Notificações** | ⬜ dependência instalada, sem uso | — | — | — |
 | **Métricas** | ⬜ não iniciado | — | — | — |
 
-Mais 16 testes de utils puras e da tela de planejamento. Total: **200** em 24 suítes.
+Mais 16 testes de utils puras e da tela de planejamento. Total: **212** em 25 suítes.
 
 Treino e Alimentação estão completos de ponta a ponta: cadastro → planejamento por dia da semana com horário → checklist de execução com quantidades, itens extras e observações.
 
@@ -78,7 +78,7 @@ O banco é criado automaticamente no primeiro start, em `ritmo.db`, junto com as
 ### Verificação de qualidade
 
 ```bash
-npm test                # 24 suítes, 202 testes, ~7s
+npm test                # 25 suítes, 212 testes, ~7s
 npm run lint            # expo lint (eslint-config-expo)
 npx tsc --noEmit        # typecheck
 ```
@@ -311,8 +311,24 @@ O guia completo de código está em [`AGENTS.md`](./AGENTS.md) — leia antes de
 - Toda mudança de schema passa por migration do Drizzle. Nunca alterar tabela na mão.
 - Componente em `PascalCase.tsx`, hook em `useSomething.ts`, tabelas e colunas em `snake_case`.
 - NativeWind para estilo, sem misturar com `StyleSheet.create`.
+- Cor de acento sai de token semântico: `primary`, `danger`, `success`, `warning`. Nunca `text-red-500` nem `bg-indigo-600`.
 - TypeScript `strict`, sem `any` sem justificativa em comentário.
 - Conventional Commits em português, um commit por unidade lógica.
+
+### Cores
+
+A fonte da verdade é [`src/theme/palette.json`](./src/theme/palette.json), com uma escala de 11 tons por família. O `tailwind.config.js` consome esse arquivo para gerar as classes, e [`src/theme/colors.ts`](./src/theme/colors.ts) exporta `shade()` e `ink()` para as posições que não aceitam `className` — `tabBarActiveTintColor`, `placeholderTextColor`, props de svg e o `color` do `ActivityIndicator`. Nenhum hex é digitado à mão em `app/` ou `src/`.
+
+| Token | Papel | DEFAULT |
+| --- | --- | --- |
+| `primary` | Ação primária: botão principal, aba ativa, estado selecionado, card de treino | `#7c3aed` |
+| `danger` | Erro de validação e ação destrutiva (excluir) | `#dc2626` |
+| `success` | Confirmação, algo concluído | `#059669` |
+| `warning` | Aviso e destaque de card | `#f59e0b` |
+
+Cada família tem os tons de 50 a 950, então `bg-primary-600`, `text-danger-500` e `dark:bg-primary-900` funcionam. O botão primário usa `primary-600` com texto branco porque esse par dá 5.70:1; `primary-500` com branco dá 4.23:1 e reprova em texto normal, então não serve de fundo.
+
+Os neutros (`neutral-*`) ainda não foram tokenizados e seguem literais. `ink` só centraliza o hex deles para as posições sem `className`, sem trocar tom.
 
 ## Documentação
 

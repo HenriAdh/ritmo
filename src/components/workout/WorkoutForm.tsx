@@ -148,7 +148,7 @@ export function WorkoutForm({ initial, onSaved, onCancel, screenTitle }: Workout
             </View>
             {rows.length > 1 ? (
               <Pressable onPress={() => removeExercise(index)} className="mt-2 self-start">
-                <Text className="text-sm text-red-500">Remover</Text>
+                <Text className="text-sm text-danger-500">Remover</Text>
               </Pressable>
             ) : null}
           </View>
@@ -162,7 +162,7 @@ export function WorkoutForm({ initial, onSaved, onCancel, screenTitle }: Workout
           </Text>
         </Pressable>
 
-        {error ? <Text className="mb-4 text-center text-sm text-red-500">{error}</Text> : null}
+        {error ? <Text className="mb-4 text-center text-sm text-danger-500">{error}</Text> : null}
       </ScrollView>
     </View>
   );

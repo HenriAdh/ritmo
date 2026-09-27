@@ -3,6 +3,8 @@ import type { ReactNode } from 'react';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { ink } from '@/src/theme/colors';
+
 export type HeaderAction = {
   label: string;
   onPress: () => void;
@@ -25,8 +27,8 @@ type ScreenHeaderProps = {
 
 const TONE_CLASSES: Record<NonNullable<HeaderAction['tone']>, string> = {
   default: 'text-neutral-900 dark:text-neutral-100',
-  positive: 'text-emerald-600 dark:text-emerald-500',
-  danger: 'text-red-600 dark:text-red-500',
+  positive: 'text-success-600 dark:text-success-500',
+  danger: 'text-danger-600 dark:text-danger-500',
 };
 
 /** Respiro entre o topo da tela e o título, somado ao inset da safe area. */
@@ -64,7 +66,7 @@ function HeaderActionButton({ action }: { action: HeaderAction }) {
       hitSlop={8}
       className="ml-2 min-h-10 items-center justify-center rounded-full px-2 active:bg-neutral-100 disabled:opacity-50 dark:active:bg-neutral-800">
       {busy ? (
-        <ActivityIndicator size="small" color={colorScheme === 'dark' ? '#fafafa' : '#171717'} />
+        <ActivityIndicator size="small" color={ink('strong', colorScheme === 'dark')} />
       ) : (
         <Text className={`text-base font-semibold ${TONE_CLASSES[action.tone ?? 'default']}`}>
           {action.label}

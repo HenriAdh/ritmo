@@ -36,7 +36,7 @@ export default function MealDetailScreen() {
     <View className="flex-1 bg-white dark:bg-black">
       {error ? (
         <View className="flex-1 items-center justify-center px-6">
-          <Text className="text-center text-sm text-red-500">{error}</Text>
+          <Text className="text-center text-sm text-danger-500">{error}</Text>
         </View>
       ) : !detail ? (
         <View className="flex-1 items-center justify-center">

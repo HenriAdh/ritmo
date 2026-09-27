@@ -8,8 +8,8 @@ import {
 } from '@/src/utils/day-summary';
 
 const BADGE_CLASS: Record<DaySummaryItem['kind'], string> = {
-  workout: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300',
-  meal: 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-300',
+  workout: 'bg-primary-100 text-primary-700 dark:bg-primary-900 dark:text-primary-300',
+  meal: 'bg-warning-100 text-warning-800 dark:bg-warning-900 dark:text-warning-300',
 };
 
 type NextActivityCardProps = {

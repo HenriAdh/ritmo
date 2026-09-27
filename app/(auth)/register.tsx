@@ -61,7 +61,7 @@ export default function RegisterScreen() {
         className="mb-4"
       />
 
-      {error ? <Text className="mb-3 text-center text-sm text-red-500">{error}</Text> : null}
+      {error ? <Text className="mb-3 text-center text-sm text-danger-500">{error}</Text> : null}
 
       <Button label="Criar conta" onPress={handleRegister} loading={submitting} />
 
